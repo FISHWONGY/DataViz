@@ -8,7 +8,7 @@ library(delabj)
 
 ```{r}
 protest <- read_csv(
-  "/Volumes/My Passport for Mac/R/Protest/protest.csv", na = "NULL")
+  "~/protest.csv", na = "NULL")
 ```
 
 ```{r}
@@ -161,7 +161,7 @@ sum_bar <- protest_sum_plot %>%
 ```{r}
 # patchwork
 w_map  / (sum_bar | eu_map) +
-  ggsave("/Volumes/My Passport for Mac/R/Protest/photo/ProtestSum_patch.png", dpi = 320, width = 13.8, height = 12)
+  ggsave("~/ProtestSum_patch.png", dpi = 320, width = 13.8, height = 12)
 ```
 
 
@@ -377,7 +377,7 @@ theme(text = element_text(size = 8.5, family="ITC Officina Sans LT Book"),
 ```{r}
 # patchwork
 res_bar  / (acco_parti_bar | parti_bar) +
-  ggsave("/Volumes/My Passport for Mac/R/Protest/photo/PartiBar_patch.png", dpi = 320, width = 13.8, height = 12)
+  ggsave("~/PartiBar_patch.png", dpi = 320, width = 13.8, height = 12)
 ```
 
 
@@ -442,5 +442,5 @@ theme(text = element_text(size = 8.5, family="ITC Officina Sans LT Book"),
 ```{r}
 # patchwork
 cn_bar  / year_bar +
-  ggsave("/Volumes/My Passport for Mac/R/Protest/photo/BarChart_patch.png", dpi = 320, width = 13.8, height = 12)
+  ggsave("~/BarChart_patch.png", dpi = 320, width = 13.8, height = 12)
 ```
