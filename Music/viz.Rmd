@@ -1,0 +1,548 @@
+```{r}
+library(tidyverse)
+library(stringr)
+library(dplyr)                                                 
+library(plyr)                                                  
+library(readr) 
+library(lubridate)
+library(reshape2)
+library(arsenal)
+library(directlabels)
+library(ggthemes)
+library(quanteda)
+```
+
+```{r}
+bbl <- read_csv("billboard_lyrics_1964-2015.csv")
+```
+
+```{r}
+k<-as.data.frame(bbl[,5])
+
+bbl<-bbl[,c(1:4,6)]
+
+k$length<-1
+
+
+# Count length of each song and putting it in the column
+for(i in 1: nrow(k)){
+    l <- sapply(strsplit(k[i,1], " "), length)
+  k[i,2]<-l
+}
+
+head(k)
+bbl<-cbind.data.frame(bbl,k)
+```
+
+```{r}
+bbl_avgs <- aggregate(bbl$length, list(bbl$Year), mean)
+colnames(bbl_avgs) <- c("year", "length")
+bbl_avgs <- bbl_avgs %>% mutate(smoothed = roll_meanr(length, 7))
+```
+
+```{r}
+b_line <- ggplot(bbl_avgs, aes(x = year, y = smoothed)) + 
+  geom_line(color = "#83B692", stat = 'identity', size = 1.2) +
+  theme_delabj_dark() +
+  scale_y_continuous(position = "right") +
+  theme(text = element_text(size = 12, family="ITC Officina Sans LT Bold"),
+        axis.line = element_blank(), 
+        axis.ticks = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_markdown(hjust = 0, vjust=-0.12, size = 24, 
+                                  family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_markdown(hjust = 0, vjust=-1.5, size = 15),
+        plot.caption = element_text(hjust = 0)) +
+    labs(y=" ", 
+        x = "", 
+       title = "Average <b, style = 'color:#83B692'>number of words</b> in billboard songs",
+       subtitle = "Year 1964 - 2015",
+      caption = "") #Source: Kaggle\nwww.fishwongy.com
+```
+
+```{r}
+#Wordcloud per year
+library(wordcloud)
+library(tm)
+library(animation)
+
+
+for(i in 1965:2015)
+  { 
+  t<-bbl[which(bbl$Year==i),]
+  
+  clean_tw<-str_replace_all(t$Lyrics,"[^[:graph:]]", " ") 
+  
+  vectored_data<-Corpus(VectorSource(clean_tw))
+  
+  clean_tw<-tm_map(vectored_data, removePunctuation)
+  clean_tw<-tm_map(clean_tw,removeWords, stopwords("english"))
+  clean_tw<-tm_map(clean_tw, (tolower))
+  
+   layout(matrix(c(1, 2), nrow=2), heights=c(1, 4))
+   par(mar=rep(0, 4))
+   plot.new()
+   text(x=0.5, y=0.5, paste("Year",i))
+  
+  wordcloud(clean_tw, random.order=F, 
+            color = rev(RColorBrewer::brewer.pal(10, "RdBu")), max.words = 100)
+  }
+```
+
+```{r}
+blcorpus <- corpus(bbl$Lyrics)
+bldfm <- dfm(blcorpus,  remove_punct = TRUE, remove=c(
+  stopwords("english"), "la", "da", "im", "amp", "oh", "na", "can", "u"), verbose=TRUE)
+textplot_wordcloud(bldfm, color = rev(RColorBrewer::brewer.pal(10, "RdYlGn")), rotation=0, min_size=.75, max_size=3, max_words = 300)
+```
+
+```{r}
+bbl$count <- 1
+```
+
+```{r}
+artist <- aggregate(bbl$count, list(bbl$Artist), sum)
+colnames(artist) <- c("artist", "count")
+artist <- filter(artist, count > 20)
+artist$artist[artist$artist == "elton john"] <- "Elton John"
+artist$artist[artist$artist == "janet jackson"] <- "Janet Jackson"
+artist$artist[artist$artist == "madonna"] <- "Madonna"
+artist$artist[artist$artist == "mariah carey"] <- "Mariah Carey"
+artist$artist[artist$artist == "michael jackson"] <- "Michael Jackson"
+artist$artist[artist$artist == "stevie wonder"] <- "Stevie Wonder"
+```
+
+```{r}
+b_bar <- 
+  artist %>%
+  ggplot(aes(x = reorder(artist, count), y = count)) +
+  #geom_hline(yintercept = c(0, 10, 20, 30), linetype = 1, color = c("black", "grey70", "grey70", "grey70"), size = 0.5) +
+  geom_bar(stat = "identity", fill = "#83B692", width = 0.5) +
+  theme_delabj_dark() +
+  scale_y_continuous(position = "right") +
+  #scale_x_discrete(expand=c(0.1,0)) +
+  geom_text(aes(label = count), nudge_y = -1, color = "white", 
+            family="ITC Officina Sans LT Book", size = 5) +
+  annotate("text", x = c(6.4, 5.5, 4.5, 3.5, 2.5, 1.5), 
+           y = c(2, 2.4, 1.9, 2.3, 2.7, 2.4), 
+           label = c("Elton John", "Janet Jackson", 
+                     "Madonna", "Mariah Carey", "Michael Jackson", "Stevie Wonder"), 
+           size = 3, color = "white") +
+  labs(y=" ", 
+       x = " ", 
+       title = "<b, style = 'color:#83B692'>Artists</b> who ranked the most on the billboard",
+       subtitle = "Year 1964 - 2015",
+       caption = "Source: Billboard\nwww.fishwongy.com") +
+  theme(text = element_text(size = 8.5, family="ITC Officina Sans LT Book"),
+        panel.grid.major = element_line(color = "white", size = 0.3), 
+        panel.grid.minor = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x.top = element_blank(),
+       axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.ticks = element_blank(),
+       axis.text.x = element_text(family = "ITC Officina Sans LT Bold", size = 13),
+        #axis.text.y = element_text(size = 10, family = "ITC Officina Sans LT Bold"),
+        plot.title = element_markdown(hjust = 0, vjust=-0.12, size = 20, 
+                                  family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_markdown(hjust = 0, vjust=-1.5, size = 15),
+       plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0, vjust = -2.5, size = 15)) +
+    coord_flip() 
+```
+
+
+
+
+
+```{r}
+song <- aggregate(bbl$count, list(bbl$Song), sum)
+colnames(song) <- c("song", "count")
+song <- filter(song, count > 4)
+song$song[song$song == "angel"] <- "Angel"
+song$song[song$song == "because of you"] <- "Because of you"
+song$song[song$song == "heaven"] <- "Heaven"
+song$song[song$song == "my love"] <- "My love"
+```
+
+```{r}
+song_bar <- song %>%
+  ggplot(aes(x = reorder(song, count), y = count)) +
+  #geom_hline(yintercept = c(-0.005, 2, 4, 6), linetype = 1, color = c("black", "grey70", "grey70", "grey70"), size = 0.5) +
+  geom_bar(stat = "identity", fill = "#83B692", width = 0.7) +
+  theme_delabj_dark() +
+  scale_y_continuous(position = "right") +
+  #scale_x_discrete(expand=c(0.1,0)) +
+  geom_text(aes(label = count), nudge_y = -.2, color = "white", 
+            family="ITC Officina Sans LT Bold", size = 5) +
+  annotate("text", x = c(4.5, 3.5, 2.5, 1.5), 
+           y = c(0.2, 0.48,0.25, 0.25), 
+           label = c("Angel", "Because of you", 
+                     "Heaven", "My love"), size = 3, color = "white") +
+  labs(y=" ", 
+       x = " ", 
+       title = "<b, style = 'color:#83B692'>Song's names</b> most appeared on the billboard",
+       subtitle = "Year 1964 - 2015",
+       caption = "") + #Source: Billboard\nwww.fishwongy.com
+theme(text = element_text(size = 8.5, family="ITC Officina Sans LT Book"),
+        panel.grid.major = element_line(color = "white", size = 0.3), 
+        panel.grid.minor = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x.top = element_blank(),
+       axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.ticks = element_blank(),
+       axis.text.x = element_text(family = "ITC Officina Sans LT Bold", size = 13),
+        #axis.text.y = element_text(size = 10, family = "ITC Officina Sans LT Bold"),
+        plot.title = element_markdown(hjust = 0, vjust=-0.12, size = 20, 
+                                  family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_markdown(hjust = 0, vjust=-1.5, size = 15),
+       plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0, vjust = -2.5, size = 15)) +
+    coord_flip() 
+```
+
+```{r}
+# patchwork
+b_line  / (b_bar|song_bar) +
+  ggsave("Billboard_patch.png", dpi = 320, width = 13.8, height = 12)
+```
+
+
+
+
+
+
+```{r}
+spotify <- read_csv("top50.csv")
+```
+
+```{r}
+spotify$count <- 1
+```
+
+```{r}
+sp_artist <- aggregate(spotify$count, list(spotify$Artist.Name), sum)
+colnames(sp_artist) <- c("artist", "count")
+sp_artist <- sp_artist %>% filter(count > 1)
+sp_artist <- sp_artist[-c(4, 5, 7, 8),]
+```
+
+```{r}
+art_bar <- 
+  sp_artist %>%
+  ggplot(aes(x = reorder(artist, count), y = count)) +
+  #geom_hline(yintercept = c(0, 1, 2, 3, 4), linetype = 1, color = c("black", "grey70", "grey70", "grey70", "grey70"), size = 0.5) +
+  geom_bar(stat = "identity", fill = "#83B692", width = 0.5) +
+  theme_delabj_dark() +
+  scale_y_continuous(position = "right") +
+  #scale_x_discrete(expand=c(0.1,0)) +
+  geom_text(aes(label = count), nudge_y = -0.2, color = "white", 
+            family="ITC Officina Sans LT Bold", size = 7) +
+  annotate("text", x = c(6.4, 5.4, 4.4, 3.4, 2.4, 1.4), 
+           y = c(0.3, 0.23, 0.25, 0.25, 0.3, 0.36), 
+           label = c("Ariana Grande", "Billie Eilish", 
+                     "Ed Sheeran", "Marshmello", "Shawn Mendes", "The Chainsmokers"), 
+           size = 4, color = "white") +
+  labs(y=" ", 
+       x = " ", 
+       title = "Artists whose song listened most on <b, style = 'color:#83B692'>Spotify",
+       subtitle = "Data from 2019",
+       caption = "") + #www.fishwongy.com
+ theme(text = element_text(size = 8.5, family="ITC Officina Sans LT Book"),
+        panel.grid.major = element_line(color = "white", size = 0.3), 
+        panel.grid.minor = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x.top = element_blank(),
+       axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.ticks = element_blank(),
+       axis.text.x = element_text(family = "ITC Officina Sans LT Bold", size = 15),
+        #axis.text.y = element_text(size = 10, family = "ITC Officina Sans LT Bold"),
+        plot.title = element_markdown(hjust = 0, vjust=-0.12, size = 20, 
+                                  family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_markdown(hjust = 0, vjust=-1.5, size = 15),
+       plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0, vjust = -2.5, size = 15)) +
+    coord_flip() 
+```
+
+```{r}
+spotify$Genre[spotify$Genre == "big room"] <- "Edm"
+spotify$Genre[spotify$Genre == "brostep"] <- "Edm"
+spotify$Genre[spotify$Genre == "electropop"] <- "Edm"
+spotify$Genre[spotify$Genre == "edm"] <- "Edm"
+spotify$Genre[spotify$Genre == "canadian hip hop"] <- "Canadian hip hop"
+spotify$Genre[spotify$Genre == "dance pop"] <- "Dance pop"
+spotify$Genre[spotify$Genre == "latin"] <- "Latin"
+spotify$Genre[spotify$Genre == "pop"] <- "Pop"
+```
+
+```{r}
+sp_gen <- aggregate(spotify$count, list(spotify$Genre), sum)
+colnames(sp_gen) <- c("genre", "count")
+sp_gen <- sp_gen %>% filter(count >2)
+```
+
+```{r}
+gen_bar <- 
+sp_gen %>%
+  ggplot(aes(x = reorder(genre, count), y = count)) +
+  #geom_hline(yintercept = c(0, 2, 4, 6, 8), linetype = 1, color = c("black", "grey70", "grey70", "grey70", "grey70"), size = 0.5) +
+  geom_bar(stat = "identity", fill = "#83B692", width = 0.5) +
+  theme_delabj_dark() +
+  scale_y_continuous(position = "right") +
+  #scale_x_discrete(expand=c(0.1,0)) +
+  geom_text(aes(label = count), nudge_y = -0.2, color = "white", 
+            family="ITC Officina Sans LT Bold", size = 7) +
+  annotate("text", x = c(5.4, 4.4, 3.4, 2.4, 1.4), 
+           y = c(0.38, 0.23, 0.2, 0.25, 0.55), 
+           label = c("Dance pop", "Edm", 
+                     "Pop", "Latin", "Canadian hip hop"),
+           size = 4, color = "white") +
+  labs(y=" ", 
+       x = " ", 
+       title = "Genre listened the most on <b, style = 'color:#83B692'>Spotify",
+       subtitle = "",
+       caption = "Source: Spotify\nwww.fishwongy.com") +
+  theme(text = element_text(family="ITC Officina Sans LT Book"),
+        panel.grid.major = element_line(color = "white", size = .3), 
+        panel.grid.minor = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x.top = element_blank(),
+        axis.title.y = element_blank(),
+         axis.text.x = element_text(family = "ITC Officina Sans LT Bold", size = 15),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.ticks = element_blank(),
+        plot.title = element_markdown(hjust = 0, vjust=-2, size = 25, 
+                                  family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_text(hjust = 0, size =15),
+        plot.caption = element_text(hjust = 0, size = 15, family="ITC Officina Sans LT Bold")) +
+    coord_flip() 
+```
+
+```{r}
+# patchwork
+art_bar  / gen_bar +
+  ggsave("Spotify_patch.png", dpi = 320, width = 10.8, height = 12)
+```
+
+
+
+
+```{r}
+sp_box <- spotify %>% select(5, 11)
+sp_box <- gather(sp_box, key = "metric", value = "count", 
+                 Beats.Per.Minute : Length.)
+```
+#plot 1 ver 1
+```{r}
+#spbox <- 
+  ggplot(sp_box, aes(x = metric, y = count)) + 
+  geom_boxplot(aes(fill = metric), color = "white", notch=TRUE) +
+  theme_delabj_dark() +
+  scale_fill_delabj() +
+  annotate("text", x = c(1, 2.1), 
+           y = c(210, 245), 
+           label = c("Beats per minute", "Song's length (in 's')"), 
+           size = 3.5, color = "white", family="ITC Officina Sans LT Bold") +
+  annotate("text", x = c(2.1), 
+           y = c(110), 
+           label = c("Panini by Lil Nas X"), 
+           size = 4.5, color = "#83B692", family="ITC Officina Sans LT Bold") +
+  labs(y=" ", 
+       x = " ", 
+       title = "<b, style = 'color:#83B692'>Spotify</b> top 50 song's average beats and length",
+       subtitle = "Data from 2019",
+       caption = "") + #www.fishwongy.com
+  theme(legend.position = "none",
+        text = element_text(family="ITC Officina Sans LT Book"),
+        #panel.grid.major = element_line(color = "white", size = .3), 
+        panel.grid.minor = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x.top = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        #axis.ticks = element_blank(),
+       plot.title = element_markdown(hjust = 0, vjust=-0.12, size = 20, 
+                                  family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_markdown(hjust = 0, vjust=-1.5, size = 15),
+       plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0, vjust = -2.5, size = 15)) +
+    coord_flip() 
+```
+
+#plot 1 - Ver2
+```{r}
+sp_avg <- sp_box %>%
+  summarize(avg = mean(count, na.rm = T)) %>%
+  pull(avg)
+
+
+sp_box$m_mean <- 
+case_when(
+  sp_box$metric == "Beats.Per.Minute" ~ mean(sp_box$count[1:50]),
+  sp_box$metric == "Length." ~ mean(sp_box$count[51:100])
+)
+```
+
+```{r}
+spbox <- 
+ sp_box %>%
+  mutate(metric = recode(metric, `Length.` = "Length",
+                         `Beats.Per.Minute` = "BPM")) %>%
+  ggplot(aes(x = metric, y = count, color = metric)) + 
+    geom_segment(aes(x = metric, xend = metric,
+                   y = sp_avg, yend = m_mean),
+               size = 0.8) +
+  geom_hline(aes(yintercept = sp_avg), color = "gray70", size = 0.6) +
+  geom_point(size = 3, alpha = 0.15) +
+  geom_jitter(size = 2, alpha = 0.25, width = 0.2) +
+  stat_summary(fun.y = mean, geom = "point", size = 5) +
+  theme_delabj() +
+  scale_color_delabj() +
+  #annotate("text", x = c(2.1), 
+   #        y = c(110), 
+    #       label = c("Panini by Lil Nas X"), 
+     #      size = 4.5, color = "#83B692", family="ITC Officina Sans LT Bold") +
+  labs(y=" ", 
+       x = " ", 
+       title = "<b, style = 'color:#83B692'>Spotify</b> top 50 song's average beats and length",
+       subtitle = "Data from 2019",
+       caption = "") + #www.fishwongy.com
+  theme(legend.position = "none",
+        text = element_text(family="ITC Officina Sans LT Book"),
+        #panel.grid.major = element_line(color = "white", size = .3), 
+        #panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        #panel.background = element_blank(),
+        #axis.line.x.top = element_blank(),
+        #axis.title.y = element_blank(),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 14, family="ITC Officina Sans LT Bold"),
+        #axis.ticks.y = element_blank(),
+        axis.ticks.x = element_line(),
+       plot.title = element_markdown(hjust = 0, vjust=-0.12, size = 20, 
+                                  family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_markdown(hjust = 0, vjust=-1.5, size = 15),
+       plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0, vjust = -2.5, size = 15)) +
+    coord_flip() 
+```
+
+
+```{r}
+sp_box2 <- spotify %>% select(6, 7, 10)
+sp_box2 <- gather(sp_box2, key = "metric", value = "count", 
+                 Energy : Valence.)
+```
+#plot 2 - Ver 1
+```{r}
+#spbox2 <- 
+ggplot(sp_box2, aes(x = metric, y = count)) + 
+  geom_boxplot(aes(fill = metric), color = "white", notch=TRUE) +
+  theme_delabj_dark() +
+  #scale_x_discrete(limits = c(20, 100)) +
+  #scale_fill_manual(values=c("#97B6B0","#D7D29E", "#BFA19C")) +
+  scale_fill_delabj() +
+  annotate("text", x = c(3.1, 1.1, 2.1), 
+           y = c(24, 57, 45), 
+           label = c("Valence", "Danceability", "Energy"), 
+           size = 3.5,  family="ITC Officina Sans LT Bold", color = "white") +
+  annotate("text", x = c(1.15, 0.85), 
+           y = c(28, 42), 
+           label = c("Takeaway by The Chainsmoker", "Boyfriend by Ariana Grande"), 
+           size = 4.5,  family="ITC Officina Sans LT Bold", color = "#83B692") + #color = "#014d64",
+  labs(y=" ", 
+       x = " ", 
+       title = "<b, style = 'color:#83B692'>Spotify</b> top 50 song's vibes",
+       subtitle = "",
+       caption = "Source: Spotify\nwww.fishwongy.com") +
+ theme(text = element_text(family="ITC Officina Sans LT Book"),
+       legend.position = "none",
+        #panel.grid.major = element_line(color = "white", size = .3), 
+        panel.grid.minor = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x.top = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        plot.title = element_markdown(hjust = 0, vjust=-0.12, size = 20, 
+                                  family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_markdown(hjust = 0, vjust=-1.5, size = 15),
+       plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0, vjust = -2.5, size = 15)) +
+    coord_flip() 
+```
+
+
+```{r}
+sp_avg2 <- sp_box2 %>%
+  summarize(avg = mean(count, na.rm = T)) %>%
+  pull(avg)
+
+
+sp_box2$m_mean <- 
+case_when(
+  sp_box2$metric == "Engergy" ~ 64.06,
+  sp_box2$metric == "Danceability" ~ mean(sp_box2$count[51:100]),
+  sp_box2$metric == "Valence." ~ mean(sp_box2$count[101:150])
+)
+```
+#plot2 - ver 2
+```{r}
+spbox2 <- 
+sp_box2 %>%
+  mutate(metric = recode(metric, `Valence.` = "Valence")) %>%
+  ggplot(aes(x = metric, y = count, color = metric)) + 
+    geom_segment(aes(x = metric, xend = metric,
+                   y = sp_avg2, yend = m_mean),
+               size = 0.8) +
+  geom_hline(aes(yintercept = sp_avg2), color = "gray70", size = 0.6) +
+  geom_point(size = 3, alpha = 0.15) +
+  geom_jitter(size = 2, alpha = 0.25, width = 0.2) +
+  stat_summary(fun.y = mean, geom = "point", size = 5) +
+  theme_delabj() +
+  scale_color_delabj() +
+  labs(y=" ", 
+       x = " ", 
+       title = "<b, style = 'color:#83B692'>Spotify</b> top 50 song's vibes",
+       subtitle = "",
+       caption = "Source: Spotify\nwww.fishwongy.com") +
+ theme(legend.position = "none",
+        text = element_text(family="ITC Officina Sans LT Book"),
+        #panel.grid.major = element_line(color = "white", size = .3), 
+        #panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        #panel.background = element_blank(),
+        #axis.line.x.top = element_blank(),
+        #axis.title.y = element_blank(),
+       axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 14, family="ITC Officina Sans LT Bold"),
+        #axis.ticks.y = element_blank(),
+        axis.ticks.x = element_line(),
+       plot.title = element_markdown(hjust = 0, vjust=-0.12, size = 20, 
+                                  family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_markdown(hjust = 0, vjust=-1.5, size = 15),
+       plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0, vjust = -2.5, size = 15)) +
+    coord_flip() 
+```
+
+```{r}
+# patchwork
+spbox  / spbox2 +
+  ggsave("/SpotifyBox_patch2.png", dpi = 320, width = 10.8, height = 12)
+```
+
