@@ -101,3 +101,71 @@ country_win_result_plot %>%
        subtitle = "From 2009 - 2019",
       caption = "") 
         
+
+
+#world map
+world_map <- map_data("world")
+colnames(world_map) <- c("long", "lat", "group", "order", "country", "subregion")
+
+test <- driver_country %>%
+  full_join(world_map, by = "country")
+
+
+#Plot world map
+ggplot(data = test, aes(x = long, y = lat, group = group, order = order, fill = count)) + 
+  geom_polygon(color = "white") +
+  theme_delabj_dark() +
+  scale_fill_viridis(direction = -1, name = "", 
+                     guide = guide_colorbar(direction = "horizontal", 
+                                            barheight = unit(2, units = "mm"),
+                                            barwidth = unit(50, units = "mm"),
+                                            draw.ulim = F, title.position = 'top', 
+                                            title.hjust = 0.5, label.hjust = 0.5)) +
+  labs(fill = " ",
+       title = "Number of <b, style = 'color:#83B692'>F1 drivers</b> (2009 - 2019)",
+       caption = "Source: Formula 1\nwww.fishwongy.com") +
+  theme(text = element_text(size = 12, family="ITC Officina Sans LT Book"),
+        legend.position = "top",
+        legend.title=element_text(size=10), 
+        legend.text=element_text(size = 8),
+        axis.title = element_blank(), 
+        axis.ticks = element_blank(), 
+        axis.line = element_blank(), 
+        axis.text = element_blank(), 
+        panel.border = element_blank(),
+        panel.grid = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.title = element_markdown(size = 13, family="ITC Officina Sans LT Bold"),
+        plot.caption = element_text(hjust = 0, size = 9,family="ITC Officina Sans LT Book"))
+
+
+
+**Zoom in to EU area**
+ggplot(data = test, aes(x = long, y = lat, group = group, order = order, fill = count)) + 
+  geom_polygon(color = "white") +
+  theme_delabj_dark() +
+  scale_fill_viridis(option = "viridis", direction = -1, name = "", 
+                     guide = guide_colorbar(direction = "horizontal", 
+                                            barheight = unit(2, units = "mm"),
+                                            barwidth = unit(50, units = "mm"),
+                                            draw.ulim = F, title.position = 'top', 
+                                            title.hjust = 0.5, label.hjust = 0.5)) +
+  coord_fixed(xlim = c(-22, 50),  ylim = c(30, 80)) +
+  labs(fill = " ",
+       title = "Number of <b, style = 'color:#83B692'>F1 drivers</b> (2009 - 2019)",
+       caption = "Source: Formula 1\nwww.fishwongy.com") +
+  theme(text = element_text(size = 12, family="ITC Officina Sans LT Book"),
+        legend.position = "top",
+        legend.title=element_text(size=10), 
+        legend.text=element_text(size = 8),
+        axis.title = element_blank(), 
+        axis.ticks = element_blank(), 
+        axis.line = element_blank(), 
+        axis.text = element_blank(), 
+        panel.border = element_blank(),
+        panel.grid = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.title = element_markdown(size = 13, family="ITC Officina Sans LT Bold"),
+        plot.caption = element_text(hjust = 0, size = 9,family="ITC Officina Sans LT Book"))
