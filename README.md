@@ -1,5 +1,5 @@
 # DataViz
-Repo for my viz work
+Repo for my viz works
 
 ![](Pacman/pacman.gif)
 
