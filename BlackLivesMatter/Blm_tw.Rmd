@@ -279,7 +279,6 @@ library(quanteda)
 text_corpus <- corpus(blm, text_field = "text")
 ```
 
-#The word riot appear with Independent. The independent tended to aasociate the word riot with the pro-democracy protestors while th other 3 media tend to associate the word riots with police, so in a sentence, they will usually say "riot police"
 ```{r, fig.height=5}
 text_corpus  %>%
     dfm(remove = c(stopwords("english"), "hongkong", "hong", "kong", "protests", "weeks", "mr", "ms", "yesterday", "said", "also", "and", "32", "can", "set", "two", "since", "took", "well"), remove_punct = TRUE) %>%
@@ -287,3 +286,29 @@ text_corpus  %>%
     textplot_wordcloud(color = rev(RColorBrewer::brewer.pal(10, "RdBu")), rotation = 0)
 ```
 
+####To extract ht and its freq
+```{r}
+ht <- str_extract_all(congress_tweets1$text, "#[A-Za-z0-9_]+")
+ht <- unlist(ht)
+head(sort(table(ht), decreasing = TRUE))
+ht <- as.data.frame(sort(table(ht), decreasing = FALSE))
+ht <- ht %>% filter(Freq > 100)
+```
+
+#Extract corona tweets
+```{r}
+corona <- congress_tweets1[grep("corona?|covid?", congress_tweets1$text, ignore.case = T), ]
+```
+
+```{r}
+corona_corpus <- corpus(corona, text_field = "text")
+```
+
+
+```{r, fig.height=5}
+corpus_subset(corona_corpus, 
+              party %in% c("Democrat", "Independent", "Republican")) %>%
+    dfm(groups = "party", remove = c(stopwords("english"), "hongkong", "hong", "kong", "protests", "weeks", "mr", "ms", "yesterday", "said", "also", "and", "32", "can", "set", "two", "since", "took", "well"), remove_punct = TRUE) %>%
+    dfm_trim(min_termfreq = 120, verbose = FALSE) %>%
+    textplot_wordcloud(comparison = TRUE, color = c("royalblue4", "#83B692", "red3"), rotation = 0)
+```
