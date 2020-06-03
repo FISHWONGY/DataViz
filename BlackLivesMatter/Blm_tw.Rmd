@@ -281,7 +281,7 @@ text_corpus <- corpus(blm, text_field = "text")
 
 ```{r, fig.height=5}
 text_corpus  %>%
-    dfm(remove = c(stopwords("english"), "hongkong", "hong", "kong", "protests", "weeks", "mr", "ms", "yesterday", "said", "also", "and", "32", "can", "set", "two", "since", "took", "well"), remove_punct = TRUE) %>%
+    dfm(remove = c(stopwords("english"), "hongkong", "hong", "kong", "protests", "weeks", "mr", "ms", "yesterday", "said", "also", "and", "32", "can", "set", "two", "since", "took", "well"), remove_punct = TRUE, remove_numbers = TRUE, remove_separators = FALSE) %>%
     dfm_trim(verbose = FALSE) %>%
     textplot_wordcloud(color = rev(RColorBrewer::brewer.pal(10, "RdBu")), rotation = 0)
 ```
@@ -308,7 +308,7 @@ corona_corpus <- corpus(corona, text_field = "text")
 ```{r, fig.height=5}
 corpus_subset(corona_corpus, 
               party %in% c("Democrat", "Independent", "Republican")) %>%
-    dfm(groups = "party", remove = c(stopwords("english"), "hongkong", "hong", "kong", "protests", "weeks", "mr", "ms", "yesterday", "said", "also", "and", "32", "can", "set", "two", "since", "took", "well"), remove_punct = TRUE) %>%
+    dfm(groups = "party", remove = c(stopwords("english"), "hongkong", "hong", "kong", "protests", "weeks", "mr", "ms", "yesterday", "said", "also", "and", "32", "can", "set", "two", "since", "took", "well"), remove_punct = TRUE, remove_numbers = TRUE, remove_separators = FALSE) %>%
     dfm_trim(min_termfreq = 120, verbose = FALSE) %>%
     textplot_wordcloud(comparison = TRUE, color = c("royalblue4", "#83B692", "red3"), rotation = 0)
 ```
