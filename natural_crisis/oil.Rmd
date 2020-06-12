@@ -1,0 +1,1096 @@
+```{r}
+library(tidyverse)
+library(sf)
+library(ggplot2)
+library(ggmap)
+library(patchwork)
+library(stringr)
+library(tmap)
+```
+
+```{r}
+shape_us <- st_read("oil_crisis/states_21basic/states.shp")
+
+df <- suppressWarnings(read.csv("oil_crisis/US.csv", na.strings=c(""," ","NA")))
+```
+
+```{r}
+df <- df %>% select(1:11)
+```
+
+
+```{r}
+#df$abbr <- sub('.*,\\s*', '', df$location)
+df$states <- sub("^.*?,", "", df$location)
+df$abbr <- sub(".*\\b([A-Z]{2}) \\d{5}.*", "\\1", df$states)
+df$abbr2 <- gsub(",.*$", "", df$abbr)
+df$abbr2 <- gsub(" ", "", df$abbr2, fixed = TRUE)
+```
+
+```{r}
+df$abbr2[df$abbr2 == "Alabama"] <- "AL"
+df$abbr2[df$abbr2 == "Alaska"] <- "AK"
+df$abbr2[df$abbr2 == "Arizona"] <- "AZ"
+df$abbr2[df$abbr2 == "Arkansas"] <- "AR"
+df$abbr2[df$abbr2 == "California"] <- "CA"
+df$abbr2[df$abbr2 == "Colorado"] <- "CO"
+df$abbr2[df$abbr2 == "Connecticut"] <- "CT"
+df$abbr2[df$abbr2 == "Delaware"] <- "DE"
+df$abbr2[df$abbr2 == "Florida"] <- "FL"
+df$abbr2[df$abbr2 == "Georgia"] <- "GA"
+
+df$abbr2[df$abbr2 == "Hawaii"] <- "HI"
+df$abbr2[df$abbr2 == "Idaho"] <- "ID"
+df$abbr2[df$abbr2 == "Illinois"] <- "IL"
+df$abbr2[df$abbr2 == "Indiana"] <- "IN"
+df$abbr2[df$abbr2 == "Iowa"] <- "IA"
+df$abbr2[df$abbr2 == "Kansas"] <- "KS"
+df$abbr2[df$abbr2 == "Kentucky"] <- "KY"
+df$abbr2[df$abbr2 == "Louisiana"] <- "LA"
+df$abbr2[df$abbr2 == "Maine"] <- "ME"
+df$abbr2[df$abbr2 == "Maryland"] <- "MD"
+
+df$abbr2[df$abbr2 == "Massachusetts"] <- "MA"
+df$abbr2[df$abbr2 == "Michigan"] <- "MI"
+df$abbr2[df$abbr2 == "Minnesota"] <- "MN"
+df$abbr2[df$abbr2 == "Mississippi"] <- "MS"
+df$abbr2[df$abbr2 == "Missouri"] <- "MO"
+df$abbr2[df$abbr2 == "Montana"] <- "MT"
+df$abbr2[df$abbr2 == "Nebraska"] <- "NE"
+df$abbr2[df$abbr2 == "Nevada"] <- "NV"
+df$abbr2[df$abbr2 == "New Hampshire"] <- "NH"
+df$abbr2[df$abbr2 == "New Jersey"] <- "NJ"
+
+df$abbr2[df$abbr2 == "New Mexico"] <- "NM"
+df$abbr2[df$abbr2 == "New York"] <- "NY"
+df$abbr2[df$abbr2 == "North Carolina"] <- "NC"
+df$abbr2[df$abbr2 == "North Dakota"] <- "ND"
+df$abbr2[df$abbr2 == "Ohio"] <- "OH"
+df$abbr2[df$abbr2 == "Oklahoma"] <- "OK"
+df$abbr2[df$abbr2 == "Oregon"] <- "OR"
+df$abbr2[df$abbr2 == "Pennsylvania"] <- "PA"
+df$abbr2[df$abbr2 == "Rhode Island"] <- "RI"
+df$abbr2[df$abbr2 == "South Carolina"] <- "SC"
+
+df$abbr2[df$abbr2 == "South Dakota"] <- "SD"
+df$abbr2[df$abbr2 == "Tennessee"] <- "TN"
+df$abbr2[df$abbr2 == "Texas"] <- "TX"
+df$abbr2[df$abbr2 == "Utah"] <- "UT"
+df$abbr2[df$abbr2 == "Vermont"] <- "VT"
+df$abbr2[df$abbr2 == "Virginia"] <- "VA"
+df$abbr2[df$abbr2 == "Washington"] <- "WA"
+df$abbr2[df$abbr2 == "West Virginia"] <- "WV"
+df$abbr2[df$abbr2 == "Wisconsin"] <- "WI"
+df$abbr2[df$abbr2 == "Wyoming"] <- "WY"
+
+df$abbr2[df$abbr2 == "District of Columbia"] <- "D.C."
+df$abbr2[df$abbr2 == "Marshall Islands"] <- "MH"
+df$abbr2[df$abbr2 == "WA.USA"] <- "WA"
+df$abbr2[df$abbr2 == "AdakIsland"] <- "AK"
+```
+
+
+```{r}
+nytdata$state[nytdata$state == "AL"] <- "Alabama"
+nytdata$state[nytdata$state == "AK"] <- "AK"
+nytdata$state[nytdata$state == "AZ"] <- "Arizona"
+nytdata$state[nytdata$state == "AR"] <- "Arkansas"
+nytdata$state[nytdata$state == "CA"] <- "California"
+nytdata$state[nytdata$state == "CO"] <- "Colorado"
+nytdata$state[nytdata$state == "CT"] <- "Connecticut"
+nytdata$state[nytdata$state == "DE"] <- "Delaware"
+nytdata$state[nytdata$state == "FL"] <- "Florida"
+nytdata$state[nytdata$state == "GA"] <- "Georgia"
+
+nytdata$state[nytdata$state == "HI"] <- "Hawaii"
+nytdata$state[nytdata$state == "ID"] <- "Idaho"
+nytdata$state[nytdata$state == "IL"] <- "Illinois"
+nytdata$state[nytdata$state == "IN"] <- "Indiana"
+nytdata$state[nytdata$state == "IA"] <- "Iowa"
+nytdata$state[nytdata$state == "KS"] <- "Kansas"
+nytdata$state[nytdata$state == "KY"] <- "Kentucky"
+nytdata$state[nytdata$state == "LA"] <- "Louisiana"
+nytdata$state[nytdata$state == "ME"] <- "Maine"
+nytdata$state[nytdata$state == "MD"] <- "Maryland"
+
+nytdata$state[nytdata$state == "MA"] <- "Massachusetts"
+nytdata$state[nytdata$state == "MI"] <- "Michigan"
+nytdata$state[nytdata$state == "MN"] <- "Minnesota"
+nytdata$state[nytdata$state == "MS"] <- "Mississippi"
+nytdata$state[nytdata$state == "MO"] <- "Missouri"
+nytdata$state[nytdata$state == "MT"] <- "Montana"
+nytdata$state[nytdata$state == "NE"] <- "Nebraska"
+nytdata$state[nytdata$state == "NV"] <- "Nevada"
+nytdata$state[nytdata$state == "NH"] <- "New Hampshire"
+nytdata$state[nytdata$state == "NJ"] <- "New Jersey"
+
+nytdata$state[nytdata$state == "NM"] <- "New Mexico"
+nytdata$state[nytdata$state == "NY"] <- "New York"
+nytdata$state[nytdata$state == "NC"] <- "North Carolina"
+nytdata$state[nytdata$state == "ND"] <- "North Dakota"
+nytdata$state[nytdata$state == "OH"] <- "Ohio"
+nytdata$state[nytdata$state == "OK"] <- "Oklahoma"
+nytdata$state[nytdata$state == "OR"] <- "Oregon"
+nytdata$state[nytdata$state == "PA"] <- "Pennsylvania"
+nytdata$state[nytdata$state == "RI"] <- "Rhode Island"
+nytdata$state[nytdata$state == "SC"] <- "South Carolina"
+
+nytdata$state[nytdata$state == "SD"] <- "South Dakota"
+nytdata$state[nytdata$state == "TN"] <- "Tennessee"
+nytdata$state[nytdata$state == "Texas"] <- "TX"
+nytdata$state[nytdata$state == "Utah"] <- "UT"
+nytdata$state[nytdata$state == "Vermont"] <- "VT"
+nytdata$state[nytdata$state == "Virginia"] <- "VA"
+nytdata$state[nytdata$state == "Washington"] <- "WA"
+nytdata$state[nytdata$state == "West Virginia"] <- "WV"
+nytdata$state[nytdata$state == "Wisconsin"] <- "WI"
+nytdata$state[nytdata$state == "Wyoming"] <- "WY"
+
+nytdata$state[nytdata$state == "District of Columbia"] <- "D.C."
+nytdata$state[nytdata$state == "Marshall Islands"] <- "MH"
+nytdata$state[nytdata$state == "WA.USA"] <- "WA"
+nytdata$state[nytdata$state == "AdakIsland"] <- "AK"
+```
+
+#data cleanning
+```{r}
+df$abbr2[df$abbr2 == '"LongIslandSound'] <- "NY"
+df$abbr2[df$abbr2 == "10mieastofBull'sBaySC"] <- "SC"
+df$abbr2[df$abbr2 == "11milesSEofCameron"] <- "LA"
+df$abbr2[df$abbr2 == "120nmoffTX"] <- "TX"
+df$abbr2[df$abbr2 == "130milesSEofGalvestonTexas"] <- "TX"
+df$abbr2[df$abbr2 == "20nmoffOregon"] <- "OR"
+df$abbr2[df$abbr2 == "20miOffshoreLA"] <- "LA"
+df$abbr2[df$abbr2 == "2milesoffshoreLouisiana"] <- "LA"
+df$abbr2[df$abbr2 == "15milesoffLAcoast"] <- "LA"
+df$abbr2[df$abbr2 == "13misouthofLACoast"] <- "LA"
+df$abbr2[df$abbr2 == "25milesoffthecoastofTexasnearFreeport"] <- "TX"
+df$abbr2[df$abbr2 == "90miOffshoreLA"] <- "LA"
+df$abbr2[df$abbr2 == "30milesoffNewJerseyCoast"] <- "NJ"
+
+
+df$abbr2[df$abbr2 == "LAUSA"] <- "LA"
+df$abbr2[df$abbr2 == "Olympia"] <- "WA"
+df$abbr2[df$abbr2 == "CoosBay"] <- "OR"
+df$abbr2[df$abbr2 == "Houma"] <- "LA"
+df$abbr2[df$abbr2 == "Eureka"] <- "CA"
+df$abbr2[df$abbr2 == "Barataria"] <- "LA"
+df$abbr2[df$abbr2 == "Kauai"] <- "HI"
+df$abbr2[df$abbr2 == "offNorthernCA"] <- "CA"
+df$abbr2[df$abbr2 == "Weymouth"] <- "MA"
+df$abbr2[df$abbr2 == "Ilwaco"] <- "WA"
+df$abbr2[df$abbr2 == "MississippiRiver"] <- "MS"
+df$abbr2[df$abbr2 == "LowerMississippiRiver"] <- "MS"
+df$abbr2[df$abbr2 == "Martinez"] <- "CA"
+df$abbr2[df$abbr2 == "MississippiSound"] <- "MS"
+df$abbr2[df$abbr2 == "Venice"] <- "LA"
+df$abbr2[df$abbr2 == "StatenIsland"] <- "NY"
+df$abbr2[df$abbr2 == "DeerPark"] <- "TX"
+df$abbr2[df$abbr2 == "MississippiRiverDelta"] <- "MS"
+df$abbr2[df$abbr2 == "MississippiRiverMileMarker387"] <- "MS"
+df$abbr2[df$abbr2 == "HarveyLocks"] <- "LA"
+df$abbr2[df$abbr2 == "Anacortes"] <- "WA"
+df$abbr2[df$abbr2 == "Hahnville"] <- "LA"
+df$abbr2[df$abbr2 == "NJUSA"] <- "NJ"
+df$abbr2[df$abbr2 == "Oahu"] <- "HI"
+df$abbr2[df$abbr2 == "Crumrod"] <- "AR"
+df$abbr2[df$abbr2 == "CorpusChristi"] <- "TX"
+df$abbr2[df$abbr2 == "Tennessee"] <- "TN"
+df$abbr2[df$abbr2 == "Texas"] <- "TX"
+df$abbr2[df$abbr2 == "TXUSA"] <- "TX"
+df$abbr2[df$abbr2 == "Newburyport"] <- "MA"
+df$abbr2[df$abbr2 == "SouthofMainHawaiianIslands"] <- "HI"
+df$abbr2[df$abbr2 == "offshoreLA"] <- "LA"
+df$abbr2[df$abbr2 == "MC474"] <- "MC"
+df$abbr2[df$abbr2 == "NorthCarolina"] <- "NC"
+df$abbr2[df$abbr2 == "SouthBend"] <- "WA"
+df$abbr2[df$abbr2 == "NewOrleans"] <- "LA"
+df$abbr2[df$abbr2 == "Portland"] <- "OR"
+df$abbr2[df$abbr2 == "OffshoreLouisiana"] <- "LA"
+df$abbr2[df$abbr2 == "SanFrancisco"] <- "CA"
+df$abbr2[df$abbr2 == "TexasCoast"] <- "TX"
+df$abbr2[df$abbr2 == "NorthernPrinceWilliamSound"] <- "AK"
+df$abbr2[df$abbr2 == "MM13.5UpperMississippiRiver"] <- "MS"
+df$abbr2[df$abbr2 == "MississippiCanyon"] <- "MS"
+df$abbr2[df$abbr2 == "MississippiRiverMM065"] <- "MS"
+df$abbr2[df$abbr2 == "TexasCity"] <- "TX"
+df$abbr2[df$abbr2 == "OffshoreLA"] <- "LA"
+df$abbr2[df$abbr2 == "Islandia"] <- "FL"
+df$abbr2[df$abbr2 == "MIUSA"] <- "MI"
+df$abbr2[df$abbr2 == "WestBayArea"] <- "CA"
+df$abbr2[df$abbr2 == "Lousiana"] <- "LA"
+df$abbr2[df$abbr2 == "PierceCounty"] <- "WA"
+df$abbr2[df$abbr2 == "Louisiana"] <- "LA"
+df$abbr2[df$abbr2 == "SanJoaquinRiverDelta"] <- "CA"
+
+df$abbr2[df$abbr2 == "NewJersey"] <- "NJ"
+df$abbr2[df$abbr2 == "PortArthur"] <- "TX"
+df$abbr2[df$abbr2 == "LACounty"] <- "LA"
+df$abbr2[df$abbr2 == "OffshoreofLouisiana"] <- "LA"
+df$abbr2[df$abbr2 == "IronCounty"] <- "WI"
+df$abbr2[df$abbr2 == "OffshoreLA"] <- "LA"
+df$abbr2[df$abbr2 == "LakeOntario"] <- "NY"
+df$abbr2[df$abbr2 == "SouthWhitleyIndiana"] <- "IN"
+df$abbr2[df$abbr2 == "MississippiCanyonblock430(MC430)"] <- "MS"
+df$abbr2[df$abbr2 == "CT(I95Bridge)"] <- "CT"
+df$abbr2[df$abbr2 == "Plaquemines"] <- "LA"
+df$abbr2[df$abbr2 == "UpperMississippiRiverMM184.5"] <- "MS"
+df$abbr2[df$abbr2 == "Plaquemines"] <- "LA"
+df$abbr2[df$abbr2 == "FLGOM"] <- "FL"
+df$abbr2[df$abbr2 == "Kodiak"] <- "AK"
+df$abbr2[df$abbr2 == "Monterey"] <- "CA"
+df$abbr2[df$abbr2 == "WashingtonDC"] <- "WA"
+df$abbr2[df$abbr2 == "MNMississippiRiver"] <- "MS"
+df$abbr2[df$abbr2 == "nearKillona"] <- "LA"
+df$abbr2[df$abbr2 == "Sitka"] <- "AK"
+df$abbr2[df$abbr2 == "SabinePass"] <- "TX"
+df$abbr2[df$abbr2 == "HarveyLA"] <- "LA"
+df$abbr2[df$abbr2 == "OhioRiverMileMarker947"] <- "OH"
+df$abbr2[df$abbr2 == "BristolBayAK"] <- "AK"
+df$abbr2[df$abbr2 == "LowerMississippiRiverMM937"] <- "MS"
+df$abbr2[df$abbr2 == "St.Louis"] <- "MO"
+df$abbr2[df$abbr2 == "StThomas"] <- "VI"
+df$abbr2[df$abbr2 == "PerdidoKey"] <- "FL"
+df$abbr2[df$abbr2 == "HoustonShipChannel"] <- "TX"
+df$abbr2[df$abbr2 == "NewYork"] <- "NY"
+df$abbr2[df$abbr2 == "CookInlet"] <- "AK"
+df$abbr2[df$abbr2 == "OffOregonCoast"] <- "OR"
+df$abbr2[df$abbr2 == "LakeMichigan"] <- "MI"
+df$abbr2[df$abbr2 == "OhioRiverMM897.5"] <- "OH"
+df$abbr2[df$abbr2 == "NYHarbor"] <- "NY"
+df$abbr2[df$abbr2 == "WestVirginia"] <- "WV"
+df$abbr2[df$abbr2 == "USVI"] <- "VI"
+df$abbr2[df$abbr2 == "Chicago"] <- "IL"
+df$abbr2[df$abbr2 == "Kodiak"] <- "AK"
+df$abbr2[df$abbr2 == "PetitBoisIsland"] <- "AL"
+df$abbr2[df$abbr2 == "NewJersey"] <- "NJ"
+df$abbr2[df$abbr2 == "PortofMiami"] <- "FL"
+df$abbr2[df$abbr2 == "Miss.RiverDelta"] <- "MS"
+df$abbr2[df$abbr2 == "Georgetown"] <- "SC"
+df$abbr2[df$abbr2 == "nearDetroit"] <- "MI"
+df$abbr2[df$abbr2 == "Judith"] <- "RI"
+df$abbr2[df$abbr2 == "TX(offshore)"] <- "TX"
+df$abbr2[df$abbr2 == "StatenIslandNY"] <- "NY"
+df$abbr2[df$abbr2 == "NorthSlope"] <- "AK"
+df$abbr2[df$abbr2 == "PassageCanal"] <- "AK"
+df$abbr2[df$abbr2 == "Lafitte"] <- "LA"
+df$abbr2[df$abbr2 == "NWGulfofAlaska"] <- "AK"
+df$abbr2[df$abbr2 == "Seattle"] <- "WA"
+df$abbr2[df$abbr2 == "Miami"] <- "FL"
+df$abbr2[df$abbr2 == "Ventura"] <- "CA"
+```
+
+```{r}
+df$count <- 1
+threat <- aggregate(df$count, list(df$abbr2, df$threat), sum)
+colnames(threat) <- c("state", "threat", "count")
+
+oil <- threat %>% filter(threat == "Oil")
+```
+
+```{r}
+w <- dplyr::left_join(shape_us, oil, by = c("STATE_ABBR"= "state"))
+```
+
+```{r}
+w <- subset(w, ! (STATE_NAME %in% c("Alaska", "Hawaii", "Puerto Rico")))
+w$count[is.na(w$count)] <- 0
+```
+
+```{r}
+plot(w["count"])
+```
+
+```{r}
+g <- st_graticule(w)
+```
+
+**Making maps with tmap**
+```{r}
+tm_shape(g) +
+  tm_lines(col = "grey", alpha = .3) +
+  tm_shape(w) +
+  tm_polygons(c("count"),
+    #style = "log10",
+    palette = "-viridis") +
+  tm_style("cobalt") +
+  tm_fill(title = "Number of crisis") +
+ tm_layout(title = "Number of oil crisis in different state", title.size = .9,title.fontfamily = "ITC Officina Sans LT Bold", title.position = c(0.64, 0.95),
+           legend.position = c(0.84, 0.02), #0.01, 0.1
+           legend.title.size = 1,
+           legend.text.size = 0.6,
+           #legend.title.color = "black",
+           #legend.text.color = "black",
+            fontfamily = "ITC Officina Sans LT Book",
+            legend.title.fontfamily = "ITC Officina Sans LT Bold") 
+  #tm_credits("", position=c("left", "bottom"))
+```
+
+
+#GGMap only for the US
+```{r}
+state_centers_abb <- data.frame(state = tolower(state.name), 
+                                stateabr = state.abb, 
+                                center_long = state.center$x, center_lat = state.center$y,
+                                region = state.region)
+us_map <- map_data("state")
+names(us_map)[names(us_map) == "region"] <- "state"
+us_map <- inner_join(us_map, state_centers_abb, by = c("state" = "state"))
+us_map <- us_map[order(us_map$order), ]
+```
+
+```{r}
+threat2 <- threat %>% 
+  group_by(state) %>%
+  summarise(crisis = sum(count)) %>%   #Gpby + summarise = aggre
+  ungroup()
+```
+
+```{r}
+us_map2 <- 
+   us_map %>%
+  left_join(threat, by = c("stateabr" = "state"))
+
+us_map2 <- 
+   us_map2 %>%
+  left_join(threat2, by = c("stateabr" = "state"))
+```
+
+```{r}
+us_map2$count[is.na(us_map2$count)] <- 0
+us_map2$count <- us_map2$count + 1
+us_map2$crisis[is.na(us_map2$crisis)] <- 0
+us_map2$crisis <- us_map2$crisis + 1
+```
+
+```{r}
+us_map2 %>%
+  #drop_na(threat) %>%
+ggplot(aes(x = long, y = lat, group = group, order = order, fill = crisis)) + 
+  geom_polygon(color = "gray70") +
+  #expand_limits(x = us_map3$long, y = us_map3$lat) + 
+  # adding my data
+  geom_point(aes(x = center_long +.5, y = center_lat +.5,  size = count, colour = threat), alpha = 0.8) +
+ # scale_color_manual(name = "", values = c("Chemical" = "royalblue4", 
+  #                                         "Oil" = "#90353b", "Other" = "#83B692"),
+   #                  breaks = c("Chemical", "Oil", "Other")) + #breaks = c("Confirmed", "Deaths")
+  scale_color_viridis_d(name = "", breaks = c("Chemical", "Oil", "Other")) +
+  scale_size(guide = 'none') +
+  scale_fill_viridis(option = "magma", direction = -1, name = "Total threats", 
+                     guide = guide_colorbar(direction = "horizontal", 
+                                            barheight = unit(2, units = "mm"),
+                                            barwidth = unit(50, units = "mm"),
+                                            draw.ulim = F, title.position = 'top', 
+                                            title.hjust = 0.5, label.hjust = 0.5)) +
+  guides(colour = guide_legend(override.aes = list(size=4))) +
+
+  theme_delabj_dark() +
+  geom_text(aes(x = center_long, y = center_lat, group = group, label = stateabr),size = 3, 
+            color = "black", family="ITC Officina Sans LT Bold") +
+  #geom_text(aes(x = long, y = lat, label = region), data = region.lab.data, 
+           # family="ITC Officina Sans LT Bold", size = 3, hjust = 0.5)+
+  labs(title = "<b, style = 'color:#83B692'>Number of crisis</b> around the US", x="", y="",
+      subtitle = "Data from 1968 - 2020",
+       caption = "") +
+  # removing unnecessary graph elements
+    theme(legend.position="top",
+         #legend.key.size = unit(1.5, "cm"),
+         #legend.key.width = unit(3.5,"cm"),
+        text = element_text(size = 9.5, family="ITC Officina Sans LT Book"),
+        axis.title = element_blank(), 
+        axis.ticks = element_blank(), 
+        axis.line = element_blank(), 
+        axis.text = element_blank(), 
+        panel.grid = element_blank(), 
+        panel.grid.major = element_blank(),
+       panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        plot.title = element_markdown(size = 15, family="ITC Officina Sans LT Bold"),
+        plot.caption = element_text(hjust = 0, size = 10, family="ITC Officina Sans LT Bold")) +
+  ggsave("photo/total_crisis.png", dpi = 320, width = 11, height = 7.8)
+```
+
+
+
+#Determine the number of incidents that occurred within/on the US states/ boundary
+```{r}
+crisis <- us_map2 %>% select(7, 11:13)
+crisis <- unique(crisis)
+```
+
+```{r}
+crisis %>%
+  drop_na(threat) %>%
+  group_by(threat) %>%
+  summarise(sum_threat = sum(count)) %>%   #Gpby + summarise = aggre
+  ungroup()
+```
+
+```{r}
+us_cri <- crisis %>%
+  drop_na(threat) %>%
+  group_by(threat) %>%
+  summarise(sum_threat = sum(count)) %>%   #Gpby + summarise = aggre
+  ungroup() %>%
+  ggplot(aes(x = sum_threat,  y = reorder(threat, sum_threat))) +
+  geom_bar(stat = "identity", group = 1, fill = "red3") +
+  scale_x_continuous(position = "top",
+                    limits = c(0, 1500),
+                    breaks = c(0, 500, 1000)) +
+  theme_minimal() +
+  geom_text(aes(label = sum_threat), nudge_x = 85, color = "gray70", 
+            family="ITC Officina Sans LT Bold", size = 7) +
+  labs(x = "", y = "",
+       title = "Number of crisis in the US",
+       subtitle = "Total of <b, style = 'color:#C10534'>1730</b> cases") +
+   theme(
+        text = element_text(size = 9.5, family="ITC Officina Sans LT Book"),
+        #panel.grid.major = element_line(color = "white", size = 1), 
+        #panel.grid.minor = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x.top = element_blank(),
+        axis.title.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.x = element_text(size=10),
+        axis.text.y = element_text(size=12,  family="ITC Officina Sans LT Bold"),
+        #axis.ticks = element_blank(),
+        plot.title.position = "plot",
+        plot.title = element_markdown(size = 25, family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_markdown(hjust = 0, vjust = 0, size = 15),
+        plot.caption = element_text(hjust = 0, size = 15, family="ITC Officina Sans LT Bold"))  
+```
+
+#Determine the number of incidents that occurred within/on Texas
+```{r}
+crisis %>%
+  filter(stateabr == "TX") %>%
+  group_by(threat) %>%
+  summarise(sum_threat = sum(count)) %>%   #Gpby + summarise = aggre
+  ungroup() 
+```
+
+```{r}
+tx <- 
+crisis %>%
+  filter(stateabr == "TX") %>%
+  group_by(threat) %>%
+  summarise(sum_threat = sum(count)) %>%   #Gpby + summarise = aggre
+  ungroup() %>%
+  ggplot(aes(x = sum_threat,  y = reorder(threat, sum_threat))) +
+  geom_bar(stat = "identity", group = 1, fill = "red3") +
+  scale_x_continuous(position = "top",
+                    expand = c(0, 0)) +
+  theme_minimal() +
+  geom_text(aes(label = sum_threat), nudge_x = -5, color = "white", 
+            family="ITC Officina Sans LT Bold", size = 7) +
+  labs(x = "", y = "",
+       title = "Number of crisis in Texas",
+       subtitle = "Total of <b, style = 'color:#C10534'>145</b> cases") +
+   theme(
+        text = element_text(size = 9.5, family="ITC Officina Sans LT Book"),
+        #panel.grid.major = element_line(color = "white", size = 1), 
+        #panel.grid.minor = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x.top = element_blank(),
+        axis.title.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.x = element_text(size=10),
+        axis.text.y = element_text(size=12,  family="ITC Officina Sans LT Bold"),
+        #axis.ticks = element_blank(),
+        plot.title.position = "plot",
+          plot.title = element_markdown(size = 25, family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_markdown(hjust = 0, vjust = 0, size = 15),
+        plot.caption = element_text(hjust = 0, size = 15, family="ITC Officina Sans LT Bold"))  
+```
+
+```{r}
+#For ig
+us_cri / tx +
+   ggsave("photo/crisis_patch.png", dpi = 320, width = 12.8, height = 12)
+```
+
+```{r}
+crisis %>% filter(crisis > 50) %>%
+ group_by(stateabr) %>%
+  summarise(sum_threat = sum(count)) %>%   
+  ungroup() %>%
+  arrange(-sum_threat)
+```
+
+
+#Identify the pair of incident nearest-neighbours that has the longest distance, indicate also the distance, while the incidents occurred within/on the US states/ boundary
+```{r}
+q3  <- state_centers_abb %>% select(2) %>%
+         left_join(df, by = c("stateabr" = "abbr2")) %>%
+         select(1,3,6:8,10,12)
+```
+
+
+```{r}
+NearDist <- function(x, y, n = 1){
+  a <- cbind(x,y)
+  d <- as.matrix(dist(a, method = "euclidean"))
+  sorted <- order(d, decreasing = F)
+  sub <- (1:length(d))[as.logical(1:length(sorted) %% 2)]
+  s <- which(d == d[sorted[sub][n]], arr.ind = T)
+  t(cbind(a[s[1],], a[s[2],]))
+}
+```
+ 
+```{r}
+NearDist(q3$lon, q3$lat)
+```
+
+
+```{r}
+LongestDist <- function(x, y, n = 1){
+  a <- cbind(x,y)
+  d <- as.matrix(dist(a, method = "euclidean"))
+  sorted <- order(d, decreasing = T)
+  sub <- (1:length(d))[as.logical(1:length(sorted) %% 2)]
+  s <- which(d == d[sorted[sub][n]], arr.ind = T)
+  t(cbind(a[s[1],], a[s[2],]))
+}
+```
+ 
+```{r}
+LongestDist(q3$lon, q3$lat)
+```
+
+```{r}
+df2 <- df[!is.na(df$max_ptl_release_gallons),]
+ptl <- aggregate(df2$max_ptl_release_gallons, list(df2$abbr2), sum)
+colnames(ptl) <- c("state", "Gallon")
+```
+
+
+```{r}
+w2 <- dplyr::left_join(shape_us, ptl, by = c("STATE_ABBR"= "state"))
+
+w2 <- subset(w2, ! (STATE_NAME %in% c("Alaska", "Hawaii", "Puerto Rico")))
+w2$Gallon[is.na(w2$Gallon)] <- 0
+```
+
+```{r}
+plot(w2["Gallon"])
+```
+
+```{r}
+g2 <- st_graticule(w2)
+```
+
+**Making maps with tmap**
+```{r}
+tm_shape(g2) +
+  tm_lines(col = "grey", alpha = .3) +
+tm_shape(w2) +
+  tm_polygons(c("Gallon"),
+    #style = "log10",
+    palette = "-viridis") +
+  tm_style("cobalt") +
+ tm_layout(title = "Total gallons of oil released from crisis", title.size = .9,title.fontfamily = "ITC Officina Sans LT Bold", title.position = c(0.62, 0.95),
+           legend.position = c(0.84, 0.02), #0.01, 0.1
+           legend.title.size = 1,
+           legend.text.size = 0.6,
+           #legend.title.color = "black",
+           #legend.text.color = "black",
+            fontfamily = "ITC Officina Sans LT Book",
+            legend.title.fontfamily = "ITC Officina Sans LT Bold") 
+  #tm_credits("", position=c("left", "bottom"))
+```
+
+```{r}
+df3 <- df[!is.na(df$field_11),]
+df3 <- df3[!is.na(df3$threat),]
+df3 <- df3 %>% select(7, 11)
+colnames(df3)[2] <- "text"
+df3$threat <- as.character(df3$threat)
+df3$text <- as.character(df3$text)
+```
+
+```{r}
+require(quanteda)
+```
+
+
+```{r, fig.height=5}
+corpus(df3, text_field = "text") %>%
+corpus_subset(threat %in% c("Oil", "Other", "Chemical")) %>%
+    dfm(groups = "threat", remove = c(stopwords("english"), "1", "2", "x", "se", "12", "11", "23", "w", "8", "43", "200", "32", "18", "22", "20", "ft", "28", "29", "21", "15", "4", "30", "9", "3", "6", "tx", "n", "50", "100", "s", "st"), remove_punct = TRUE) %>%
+    dfm_trim(min_termfreq = 30, verbose = FALSE) %>%
+    textplot_wordcloud(comparison = TRUE, color = c("royalblue4", "red3", "#83B692"), rotation = 0)
+```
+
+
+```{r}
+ts <- df[!is.na(df$threat),]
+ts <- ts %>% select(2,7)
+ts$open_date <- as.Date(ts$open_date, "%d/%m/%Y")
+ts$my <- format(as.Date(ts$open_date), "%Y-%m")
+ts$count <- 1
+ts <- aggregate(ts$count, list(ts$my, ts$threat), sum)
+colnames(ts) <- c("date", "threat", "count")
+ts$date2 <- as.Date(paste(ts$date,"-01",sep=""))
+```
+
+```{r}
+ts %>% filter(date2 > as.Date(c("2004-01-01"))) %>%
+ggplot(mapping = aes(x = date2, y = count, 
+         color = threat,
+         group = threat)) + 
+  geom_line(size = 1) + 
+  theme_delabj() +
+  #::scale_color_stata(name = "") +
+  scale_color_delabj(name = "") +
+  scale_y_continuous(position = "right") + 
+  scale_x_date(date_labels = "%b-%Y", breaks = "6 months") +
+  #guides(colour = guide_legend(override.aes = list(size=2))) +
+  labs(x = " ", 
+       y = "", 
+       title = "Environmental crisis in the US\n", 
+       #subtitle = paste("Data as of", format(max(cov_curve$date), "%A, %B %e, %Y \n")), 
+       subtitle = "\n",
+        caption="") +
+   theme(#legend.position="top",
+        legend.position = c(0.15, 1.05),
+        legend.direction = "horizontal",
+        legend.key.size = unit(0.5, "cm"),
+        legend.text=element_text(size = 14),
+        text = element_text(size = 8.5, family="ITC Officina Sans LT Book"),
+        #axis.line = element_blank(), 
+        axis.ticks = element_blank(),
+        #panel.grid.major = element_blank(),
+       panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.text.x = element_text(size=10, angle = 90),
+        axis.text.y = element_text(size=12,  family="ITC Officina Sans LT Bold"),
+        #axis.ticks = element_blank(),
+        plot.title.position = "plot",
+          plot.title = element_markdown(size = 25, family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_markdown(hjust = 0, vjust = 0, size = 15),
+        plot.caption = element_text(hjust = 0, size = 15, family="ITC Officina Sans LT Bold"))  
+```
+
+```{r}
+ts %>% filter(date2 > as.Date(c("2004-01-01"))) %>%
+       mutate(smoothed = roll_meanr(count, 7)) %>% 
+ggplot(mapping = aes(x = date2, y = smoothed, 
+         color = threat,
+         group = threat)) + 
+  geom_line(size = 1) + 
+  theme_delabj() +
+  #::scale_color_stata(name = "") +
+  scale_color_delabj(name = "") +
+  scale_y_continuous(position = "right", 
+                     limits = c(0,17), 
+                     breaks = c(4,8,12, 16), labels = c(4,8,12, 16)) + 
+  scale_x_date(date_labels = "%Y", breaks = "2 years") +
+  #guides(colour = guide_legend(override.aes = list(size=2))) +
+  labs(x = " ", 
+       y = "", 
+       title = "Environmental crisis in the US over time\n", 
+       #subtitle = paste("Data as of", format(max(cov_curve$date), "%A, %B %e, %Y \n")), 
+       subtitle = "Monthly crisis",
+        caption="") +
+   theme(#legend.position="top",
+        legend.position = c(0.11, 1.02),
+        legend.direction = "horizontal",
+        legend.key.size = unit(0.5, "cm"),
+        legend.text=element_text(size = 14),
+        text = element_text(size = 8.5, family="ITC Officina Sans LT Book"),
+        #axis.line = element_blank(), 
+        axis.ticks = element_blank(),
+        #panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.text.x = element_text(size=10, family="ITC Officina Sans LT Bold"),
+        axis.text.y = element_text(size=12,  family="ITC Officina Sans LT Bold"),
+        #axis.ticks = element_blank(),
+        plot.title.position = "plot",
+          plot.title = element_markdown(size = 25, family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_text(hjust = 01, vjust = -10, size = 10, family="ITC Officina Sans LT Bold"),
+        plot.caption = element_text(hjust = 0, size = 15, family="ITC Officina Sans LT Bold"))  + 
+   ggsave("photo/ts2.png", dpi = 320, width = 10.8, height = 7)
+```
+
+```{r}
+ts %>% filter(date2 > as.Date(c("2004-01-01"))) %>%
+       mutate(smoothed = roll_meanr(count, 7)) %>% 
+ggplot(mapping = aes(x = date2, y = smoothed, 
+         color = threat,
+         group = threat)) + 
+  geom_line(size = 1) + 
+  theme_delabj() +
+  #::scale_color_stata(name = "") +
+  scale_color_delabj(name = "") +
+  scale_y_continuous(position = "right", 
+                     limits = c(0,17), 
+                     breaks = c(4,8,12, 16), labels = c(4,8,12, 16)) + 
+  scale_x_date(date_labels = "%b-%Y", breaks = "6 months") +
+  #guides(colour = guide_legend(override.aes = list(size=2))) +
+  labs(x = " ", 
+       y = "", 
+       title = "Environmental crisis in the US\n", 
+       #subtitle = paste("Data as of", format(max(cov_curve$date), "%A, %B %e, %Y \n")), 
+       subtitle = "\n",
+        caption="") +
+   theme(#legend.position="top",
+        legend.position = c(0.11, 1.02),
+        legend.direction = "horizontal",
+        legend.key.size = unit(0.5, "cm"),
+        legend.text=element_text(size = 14),
+        text = element_text(size = 8.5, family="ITC Officina Sans LT Book"),
+        #axis.line = element_blank(), 
+        axis.ticks = element_blank(),
+        #panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.text.x = element_text(size=10, angle = 90),
+        axis.text.y = element_text(size=12,  family="ITC Officina Sans LT Bold"),
+        #axis.ticks = element_blank(),
+        plot.title.position = "plot",
+          plot.title = element_markdown(size = 25, family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_markdown(hjust = 0, vjust = 0, size = 15),
+        plot.caption = element_text(hjust = 0, size = 15, family="ITC Officina Sans LT Bold"))   +
+   ggsave("photo/ts.png", dpi = 320, width = 10.8, height = 7)
+```
+
+```{r}
+a1 <- ts %>% filter(date2 > as.Date(c("2004-01-01"))) %>%
+       mutate(smoothed = roll_meanr(count, 7)) %>% 
+ggplot(mapping = aes(x = date2, y = smoothed, 
+         color = threat,
+         group = threat)) + 
+  geom_line(size = 1) + 
+  view_follow(fixed_y = T)+
+  geom_point(color = "red")+
+  transition_reveal(date2)+
+  theme_delabj() +
+  #::scale_color_stata(name = "") +
+  scale_color_delabj(name = "") +
+  scale_y_continuous(position = "right")+ 
+                     #limits = c(0,17), 
+                     #breaks = c(4,8,12, 16), labels = c(4,8,12, 16)) + 
+  #scale_x_date(date_labels = "%Y", breaks = "2 years") +
+  #guides(colour = guide_legend(override.aes = list(size=2))) +
+  labs(x = " ", 
+       y = "", 
+       title = "Environmental crisis in the US over time\n", 
+       subtitle = "Monthly crisis",
+        caption="") +
+   theme(legend.position="top",
+        #legend.position = c(0.11, 1.02),
+        #legend.direction = "horizontal",
+        #legend.key.size = unit(0.5, "cm"),
+        legend.text=element_text(size = 14),
+        text = element_text(size = 8.5, family="ITC Officina Sans LT Book"),
+        #axis.line = element_blank(), 
+        axis.ticks = element_blank(),
+        #panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.text.x = element_text(size=10, family="ITC Officina Sans LT Bold"),
+        axis.text.y = element_text(size=12,  family="ITC Officina Sans LT Bold"),
+        #axis.ticks = element_blank(),
+        plot.title.position = "plot",
+        plot.title = element_markdown(size = 25, family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_text(hjust = 01, vjust = -30, size = 10, family="ITC Officina Sans LT Bold"),
+        plot.caption = element_text(hjust = 0, size = 15, family="ITC Officina Sans LT Bold"))  
+animate(a1, end_pause = 25, nframes = 350, fps = 10)
+   #ggsave("photo/ts2.png", dpi = 320, width = 10.8, height = 7)
+```
+
+
+```{r}
+df <- suppressWarnings(read.csv("oil_crisis/US.csv", na.strings=c(""," ","NA")))
+```
+
+```{r}
+df <- df %>% select(1:11)
+```
+
+
+```{r}
+#df$abbr <- sub('.*,\\s*', '', df$location)
+df$states <- sub("^.*?,", "", df$location)
+df$abbr <- sub(".*\\b([A-Z]{2}) \\d{5}.*", "\\1", df$states)
+df$abbr2 <- gsub(",.*$", "", df$abbr)
+df$abbr2 <- gsub(" ", "", df$abbr2, fixed = TRUE)
+```
+
+```{r}
+df$abbr2[df$abbr2 == "Alabama"] <- "AL"
+df$abbr2[df$abbr2 == "Alaska"] <- "AK"
+df$abbr2[df$abbr2 == "Arizona"] <- "AZ"
+df$abbr2[df$abbr2 == "Arkansas"] <- "AR"
+df$abbr2[df$abbr2 == "California"] <- "CA"
+df$abbr2[df$abbr2 == "Colorado"] <- "CO"
+df$abbr2[df$abbr2 == "Connecticut"] <- "CT"
+df$abbr2[df$abbr2 == "Delaware"] <- "DE"
+df$abbr2[df$abbr2 == "Florida"] <- "FL"
+df$abbr2[df$abbr2 == "Georgia"] <- "GA"
+
+df$abbr2[df$abbr2 == "Hawaii"] <- "HI"
+df$abbr2[df$abbr2 == "Idaho"] <- "ID"
+df$abbr2[df$abbr2 == "Illinois"] <- "IL"
+df$abbr2[df$abbr2 == "Indiana"] <- "IN"
+df$abbr2[df$abbr2 == "Iowa"] <- "IA"
+df$abbr2[df$abbr2 == "Kansas"] <- "KS"
+df$abbr2[df$abbr2 == "Kentucky"] <- "KY"
+df$abbr2[df$abbr2 == "Louisiana"] <- "LA"
+df$abbr2[df$abbr2 == "Maine"] <- "ME"
+df$abbr2[df$abbr2 == "Maryland"] <- "MD"
+
+df$abbr2[df$abbr2 == "Massachusetts"] <- "MA"
+df$abbr2[df$abbr2 == "Michigan"] <- "MI"
+df$abbr2[df$abbr2 == "Minnesota"] <- "MN"
+df$abbr2[df$abbr2 == "Mississippi"] <- "MS"
+df$abbr2[df$abbr2 == "Missouri"] <- "MO"
+df$abbr2[df$abbr2 == "Montana"] <- "MT"
+df$abbr2[df$abbr2 == "Nebraska"] <- "NE"
+df$abbr2[df$abbr2 == "Nevada"] <- "NV"
+df$abbr2[df$abbr2 == "New Hampshire"] <- "NH"
+df$abbr2[df$abbr2 == "New Jersey"] <- "NJ"
+
+df$abbr2[df$abbr2 == "New Mexico"] <- "NM"
+df$abbr2[df$abbr2 == "New York"] <- "NY"
+df$abbr2[df$abbr2 == "North Carolina"] <- "NC"
+df$abbr2[df$abbr2 == "North Dakota"] <- "ND"
+df$abbr2[df$abbr2 == "Ohio"] <- "OH"
+df$abbr2[df$abbr2 == "Oklahoma"] <- "OK"
+df$abbr2[df$abbr2 == "Oregon"] <- "OR"
+df$abbr2[df$abbr2 == "Pennsylvania"] <- "PA"
+df$abbr2[df$abbr2 == "Rhode Island"] <- "RI"
+df$abbr2[df$abbr2 == "South Carolina"] <- "SC"
+
+df$abbr2[df$abbr2 == "South Dakota"] <- "SD"
+df$abbr2[df$abbr2 == "Tennessee"] <- "TN"
+df$abbr2[df$abbr2 == "Texas"] <- "TX"
+df$abbr2[df$abbr2 == "Utah"] <- "UT"
+df$abbr2[df$abbr2 == "Vermont"] <- "VT"
+df$abbr2[df$abbr2 == "Virginia"] <- "VA"
+df$abbr2[df$abbr2 == "Washington"] <- "WA"
+df$abbr2[df$abbr2 == "West Virginia"] <- "WV"
+df$abbr2[df$abbr2 == "Wisconsin"] <- "WI"
+df$abbr2[df$abbr2 == "Wyoming"] <- "WY"
+
+df$abbr2[df$abbr2 == "District of Columbia"] <- "D.C."
+df$abbr2[df$abbr2 == "Marshall Islands"] <- "MH"
+df$abbr2[df$abbr2 == "WA.USA"] <- "WA"
+df$abbr2[df$abbr2 == "AdakIsland"] <- "AK"
+```
+
+#data cleanning
+```{r}
+df$abbr2[df$abbr2 == '"LongIslandSound'] <- "NY"
+df$abbr2[df$abbr2 == "10mieastofBull'sBaySC"] <- "SC"
+df$abbr2[df$abbr2 == "11milesSEofCameron"] <- "LA"
+df$abbr2[df$abbr2 == "120nmoffTX"] <- "TX"
+df$abbr2[df$abbr2 == "130milesSEofGalvestonTexas"] <- "TX"
+df$abbr2[df$abbr2 == "20nmoffOregon"] <- "OR"
+df$abbr2[df$abbr2 == "20miOffshoreLA"] <- "LA"
+df$abbr2[df$abbr2 == "2milesoffshoreLouisiana"] <- "LA"
+df$abbr2[df$abbr2 == "15milesoffLAcoast"] <- "LA"
+df$abbr2[df$abbr2 == "13misouthofLACoast"] <- "LA"
+df$abbr2[df$abbr2 == "25milesoffthecoastofTexasnearFreeport"] <- "TX"
+df$abbr2[df$abbr2 == "90miOffshoreLA"] <- "LA"
+df$abbr2[df$abbr2 == "30milesoffNewJerseyCoast"] <- "NJ"
+
+
+df$abbr2[df$abbr2 == "LAUSA"] <- "LA"
+df$abbr2[df$abbr2 == "Olympia"] <- "WA"
+df$abbr2[df$abbr2 == "CoosBay"] <- "OR"
+df$abbr2[df$abbr2 == "Houma"] <- "LA"
+df$abbr2[df$abbr2 == "Eureka"] <- "CA"
+df$abbr2[df$abbr2 == "Barataria"] <- "LA"
+df$abbr2[df$abbr2 == "Kauai"] <- "HI"
+df$abbr2[df$abbr2 == "offNorthernCA"] <- "CA"
+df$abbr2[df$abbr2 == "Weymouth"] <- "MA"
+df$abbr2[df$abbr2 == "Ilwaco"] <- "WA"
+df$abbr2[df$abbr2 == "MississippiRiver"] <- "MS"
+df$abbr2[df$abbr2 == "LowerMississippiRiver"] <- "MS"
+df$abbr2[df$abbr2 == "Martinez"] <- "CA"
+df$abbr2[df$abbr2 == "MississippiSound"] <- "MS"
+df$abbr2[df$abbr2 == "Venice"] <- "LA"
+df$abbr2[df$abbr2 == "StatenIsland"] <- "NY"
+df$abbr2[df$abbr2 == "DeerPark"] <- "TX"
+df$abbr2[df$abbr2 == "MississippiRiverDelta"] <- "MS"
+df$abbr2[df$abbr2 == "MississippiRiverMileMarker387"] <- "MS"
+df$abbr2[df$abbr2 == "HarveyLocks"] <- "LA"
+df$abbr2[df$abbr2 == "Anacortes"] <- "WA"
+df$abbr2[df$abbr2 == "Hahnville"] <- "LA"
+df$abbr2[df$abbr2 == "NJUSA"] <- "NJ"
+df$abbr2[df$abbr2 == "Oahu"] <- "HI"
+df$abbr2[df$abbr2 == "Crumrod"] <- "AR"
+df$abbr2[df$abbr2 == "CorpusChristi"] <- "TX"
+df$abbr2[df$abbr2 == "Tennessee"] <- "TN"
+df$abbr2[df$abbr2 == "Texas"] <- "TX"
+df$abbr2[df$abbr2 == "TXUSA"] <- "TX"
+df$abbr2[df$abbr2 == "Newburyport"] <- "MA"
+df$abbr2[df$abbr2 == "SouthofMainHawaiianIslands"] <- "HI"
+df$abbr2[df$abbr2 == "offshoreLA"] <- "LA"
+df$abbr2[df$abbr2 == "MC474"] <- "MC"
+df$abbr2[df$abbr2 == "NorthCarolina"] <- "NC"
+df$abbr2[df$abbr2 == "SouthBend"] <- "WA"
+df$abbr2[df$abbr2 == "NewOrleans"] <- "LA"
+df$abbr2[df$abbr2 == "Portland"] <- "OR"
+df$abbr2[df$abbr2 == "OffshoreLouisiana"] <- "LA"
+df$abbr2[df$abbr2 == "SanFrancisco"] <- "CA"
+df$abbr2[df$abbr2 == "TexasCoast"] <- "TX"
+df$abbr2[df$abbr2 == "NorthernPrinceWilliamSound"] <- "AK"
+df$abbr2[df$abbr2 == "MM13.5UpperMississippiRiver"] <- "MS"
+df$abbr2[df$abbr2 == "MississippiCanyon"] <- "MS"
+df$abbr2[df$abbr2 == "MississippiRiverMM065"] <- "MS"
+df$abbr2[df$abbr2 == "TexasCity"] <- "TX"
+df$abbr2[df$abbr2 == "OffshoreLA"] <- "LA"
+df$abbr2[df$abbr2 == "Islandia"] <- "FL"
+df$abbr2[df$abbr2 == "MIUSA"] <- "MI"
+df$abbr2[df$abbr2 == "WestBayArea"] <- "CA"
+df$abbr2[df$abbr2 == "Lousiana"] <- "LA"
+df$abbr2[df$abbr2 == "PierceCounty"] <- "WA"
+df$abbr2[df$abbr2 == "Louisiana"] <- "LA"
+df$abbr2[df$abbr2 == "SanJoaquinRiverDelta"] <- "CA"
+
+df$abbr2[df$abbr2 == "NewJersey"] <- "NJ"
+df$abbr2[df$abbr2 == "PortArthur"] <- "TX"
+df$abbr2[df$abbr2 == "LACounty"] <- "LA"
+df$abbr2[df$abbr2 == "OffshoreofLouisiana"] <- "LA"
+df$abbr2[df$abbr2 == "IronCounty"] <- "WI"
+df$abbr2[df$abbr2 == "OffshoreLA"] <- "LA"
+df$abbr2[df$abbr2 == "LakeOntario"] <- "NY"
+df$abbr2[df$abbr2 == "SouthWhitleyIndiana"] <- "IN"
+df$abbr2[df$abbr2 == "MississippiCanyonblock430(MC430)"] <- "MS"
+df$abbr2[df$abbr2 == "CT(I95Bridge)"] <- "CT"
+df$abbr2[df$abbr2 == "Plaquemines"] <- "LA"
+df$abbr2[df$abbr2 == "UpperMississippiRiverMM184.5"] <- "MS"
+df$abbr2[df$abbr2 == "Plaquemines"] <- "LA"
+df$abbr2[df$abbr2 == "FLGOM"] <- "FL"
+df$abbr2[df$abbr2 == "Kodiak"] <- "AK"
+df$abbr2[df$abbr2 == "Monterey"] <- "CA"
+df$abbr2[df$abbr2 == "WashingtonDC"] <- "WA"
+df$abbr2[df$abbr2 == "MNMississippiRiver"] <- "MS"
+df$abbr2[df$abbr2 == "nearKillona"] <- "LA"
+df$abbr2[df$abbr2 == "Sitka"] <- "AK"
+df$abbr2[df$abbr2 == "SabinePass"] <- "TX"
+df$abbr2[df$abbr2 == "HarveyLA"] <- "LA"
+df$abbr2[df$abbr2 == "OhioRiverMileMarker947"] <- "OH"
+df$abbr2[df$abbr2 == "BristolBayAK"] <- "AK"
+df$abbr2[df$abbr2 == "LowerMississippiRiverMM937"] <- "MS"
+df$abbr2[df$abbr2 == "St.Louis"] <- "MO"
+df$abbr2[df$abbr2 == "StThomas"] <- "VI"
+df$abbr2[df$abbr2 == "PerdidoKey"] <- "FL"
+df$abbr2[df$abbr2 == "HoustonShipChannel"] <- "TX"
+df$abbr2[df$abbr2 == "NewYork"] <- "NY"
+df$abbr2[df$abbr2 == "CookInlet"] <- "AK"
+df$abbr2[df$abbr2 == "OffOregonCoast"] <- "OR"
+df$abbr2[df$abbr2 == "LakeMichigan"] <- "MI"
+df$abbr2[df$abbr2 == "OhioRiverMM897.5"] <- "OH"
+df$abbr2[df$abbr2 == "NYHarbor"] <- "NY"
+df$abbr2[df$abbr2 == "WestVirginia"] <- "WV"
+df$abbr2[df$abbr2 == "USVI"] <- "VI"
+df$abbr2[df$abbr2 == "Chicago"] <- "IL"
+df$abbr2[df$abbr2 == "Kodiak"] <- "AK"
+df$abbr2[df$abbr2 == "PetitBoisIsland"] <- "AL"
+df$abbr2[df$abbr2 == "NewJersey"] <- "NJ"
+df$abbr2[df$abbr2 == "PortofMiami"] <- "FL"
+df$abbr2[df$abbr2 == "Miss.RiverDelta"] <- "MS"
+df$abbr2[df$abbr2 == "Georgetown"] <- "SC"
+df$abbr2[df$abbr2 == "nearDetroit"] <- "MI"
+df$abbr2[df$abbr2 == "Judith"] <- "RI"
+df$abbr2[df$abbr2 == "TX(offshore)"] <- "TX"
+df$abbr2[df$abbr2 == "StatenIslandNY"] <- "NY"
+df$abbr2[df$abbr2 == "NorthSlope"] <- "AK"
+df$abbr2[df$abbr2 == "PassageCanal"] <- "AK"
+df$abbr2[df$abbr2 == "Lafitte"] <- "LA"
+df$abbr2[df$abbr2 == "NWGulfofAlaska"] <- "AK"
+df$abbr2[df$abbr2 == "Seattle"] <- "WA"
+df$abbr2[df$abbr2 == "Miami"] <- "FL"
+df$abbr2[df$abbr2 == "Ventura"] <- "CA"
+```
+
+```{r}
+df <- df[!is.na(df$threat),]
+df$open_date <- as.Date(df$open_date, "%d/%m/%Y")
+df$year <- format(as.Date(df$open_date), "%Y")
+state <-  as.data.frame(state.abb)
+```
+
+```{r}
+df2 <- df %>% select(7,14, 15) %>%
+  filter(abbr2 != "GulfofMexico") 
+
+df2 <- state %>% left_join(df2, by = c("state.abb" = "abbr2"))
+df2$count <- 1
+
+crisis <- aggregate(df2$count, list(df2$year, df2$state.abb), sum)
+colnames(crisis) <- c("date", "state", "count")
+```
+
+```{r}
+crisis_rank <- crisis %>%  
+  filter(date >= 2000) %>%   #filter(date >= as.Date("2000-01-01"))
+   group_by(state) %>%
+  mutate(cu_crisis = cumsum(count)) %>%
+  ungroup() %>%
+  group_by(date) %>%  
+  arrange(date, -cu_crisis) %>%  
+  mutate(rank = 1:n()) %>%  
+  filter(rank <= 10) %>%
+  ungroup() 
+ 
+
+crisis_rank$date <- as.numeric(crisis_rank$date)
+```
+
+```{r}
+p <- ggplot(crisis_rank, aes(group = state)) + 
+  geom_rect_pattern(
+    aes(
+      xmin = 0, 
+      xmax = cu_crisis, 
+      ymin = rank - 0.45, 
+      ymax = rank + 0.45,
+     # pattern_filename = I(flag),
+    fill = cu_crisis), 
+    pattern = 'none',
+    #fill    = 'grey70',
+    pattern_gravity = 'East',  # Push flag to the right
+    pattern_type    = 'none',  # no auto-rescale
+    pattern_scale   = -2       # Scale to height.
+  ) +   
+  theme_delabj_dark() +
+  geom_text(aes(y = rank, label = state), x = -5, col = "white",  hjust = "right", size = 7, family="ITC Officina Sans LT Book") +
+  geom_text(aes(label = as.character(date)), x = 400 , y = -9, size = 10, col = "white", family="ITC Officina Sans LT Book") +
+  scale_y_reverse() + 
+  scale_fill_viridis_b(direction = -1) +
+  labs(x = '\n\nNumber of crisis\n', fill = NULL,
+       title = "Environmental crisis in the US over time",
+       subtitle = "",
+       caption = "") +  #Source: Johns Hopkins CSSE\nwww.fishwongy.com
+  theme(text = element_text(size = 7.5, family="ITC Officina Sans LT Book"),
+        #legend.key.width = unit(3,"cm"),
+        legend.position = "none",
+        axis.text.y     = element_blank(),
+        axis.title.y    = element_blank(),
+        axis.ticks.y    = element_blank(),
+        axis.title.x= element_text(size = 15),
+        legend.key.size = unit(2, 'cm'),
+        axis.text       = element_text(size = 20),
+        axis.title      = element_text(size = 20),
+        plot.title = element_text(size = 15, face = "bold", family="ITC Officina Sans LT Bold"),
+        plot.caption = element_text(size = 13, hjust = 0)
+  ) +  
+  scale_x_continuous(  
+    limits = c(-20, 600),  
+    breaks = c(0, 100, 200, 300,400, 500, 600)
+  ) +
+ gganimate::transition_time(date)
+
+animate(p, duration = 15)
+
+anim_save("crisis_racing.gif", width = 11, height = 8)
+```
