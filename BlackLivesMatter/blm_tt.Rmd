@@ -1,0 +1,253 @@
+```{r}
+library(tidyverse)
+library(ggbeeswarm)
+library(extrafont)
+```
+
+```{r}
+# Get the Data ------
+firsts <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-06-09/firsts.csv')
+science <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-06-09/science.csv')
+```
+
+```{r}
+# Clean up data ------
+## make gender and category factors
+firsts <- firsts %>% 
+  mutate_at(c("gender", "category"), as.factor) %>% 
+  mutate(decade = year - year %% 10) %>%
+  mutate(gender = case_when(str_detect(gender, "African-American Firsts") ~ "Male", TRUE~"Female"))
+```
+
+```{r, fig.height=12, fig.width=24}
+# Count of firsts
+firsts %>% 
+  ggplot(aes(decade, fill = category)) +
+  geom_rect(mapping = aes(xmin = 1945, xmax = 1965, ymin = 0, ymax = 64.3), fill = NA, color = "#C2C2C2", linetype = 3) + ## dotted outline of 50s-60s
+  geom_bar() +
+  
+  scale_y_continuous(expand = expansion(0,0)) +
+  scale_x_continuous(breaks = seq(from = 1730, to =2010, by = 10), labels = paste0(seq(1730, 2010, by = 10), "s"), expand = expansion(0,0)) +
+  scale_fill_paletteer_d("dutchmasters::view_of_Delft") +
+  
+  geom_curve(aes(x = 1739, y = 13, xend = 1730, yend = 1.5), size = 0.5,  ## 1738 arrow
+             arrow = arrow(length = unit(0.2, "inch")), 
+             curvature = 0.4, color = "#F5F5F5") +
+  geom_curve(aes(x = 1915, y = 53, xend = 1942, yend = 58.5), size = 0.5, ## civil rights movement arrow
+             arrow = arrow(length = unit(0.2, "inch")), 
+             curvature = -0.3, color = "#F5F5F5") +
+  geom_rect(mapping = aes(xmin = 1969, xmax = 2001, ymin = 55, ymax = 65), fill = "#525252", color = "#525252") +  ## background of the post civil rights annotation
+  annotate("text", x = 1740, y = 13, label = "1738:\nFirst free African-American community,\nGracia Real de Santa Teresa de Mose in Florida", 
+           hjust = 0, family = "IBM Plex Sans Medium", fontface = "italic", size = 7, color = "#F5F5F5") +
+  annotate("text", x = 1855, y = 30, label = "1865:\nRatification of\nthe 13th Amendment,\nAbolishment of slavery", 
+           hjust = 0, family = "IBM Plex Sans Medium", fontface = "italic", size = 7, color = "#F5F5F5") +
+  annotate("text", x = 1895, y = 50, label = "1950s-1960s:\nCivil Rights Movement", 
+           hjust = 0, family = "IBM Plex Sans Medium", fontface = "italic", size = 7, color = "#F5F5F5") +
+  annotate("text", x = 1970, y = 60, label = "Post Civil Rights Era:\nGreater political\nrepresentation", 
+           hjust = 0, family = "IBM Plex Sans Medium", fontface = "italic", size = 6, color = "#F5F5F5") +
+  
+  labs(title = "Achievements by African Americans Throughout History\n", 
+       subtitle = "Number of Achievements",
+       x = "", y = "",
+       caption = "Data: Tidy Tuesday\nwww.fishwongy.com") +
+  theme_delabj_dark() +
+  theme(text = element_text(family = "IBM Plex Sans SemiBold", size = 13),
+                      title = element_text("IBM Plex Sans SemiBold", size = 24),
+                      plot.title = element_text("IBM Plex Sans SemiBold", size = 32),
+                      plot.title.position = "plot",
+                      plot.subtitle = element_text("IBM Plex Sans SemiBold", size = 20),
+                      plot.caption = element_text(size = 14),
+                      axis.text = element_text(size = 14, color = "#F5F5F5"),
+                      #axis.text.x = element_blank(),
+                      axis.line.x = element_line(color = "#F5F5F5"),
+                      axis.line.y = element_line(color = "#F5F5F5"),
+                      #axis.line.x = element_blank(),
+                      #axis.line.y = element_line(color = "gray80"),
+                      #panel.grid = element_blank(),
+                      legend.text = element_text(size = 21, family = "IBM Plex Sans Medium"),
+                      legend.title = element_blank(),
+                     # legend.background = element_rect(fill = "#525252", color = "#525252"),
+                      plot.margin = margin(20, 20, 20, 20),
+                      panel.grid.major.x = element_blank(),
+                      panel.grid.minor.x = element_blank(),
+                     # panel.grid.major.y = element_line(color = "gray70"),
+                      panel.grid.minor.y = element_blank(),
+                      #plot.background = element_rect(fill = "#525252", color = "#525252"),
+                      legend.position = c(.2, .785)) +
+  ggsave("black-achievements.png", width = 24, height = 12, dpi = 320) +
+NULL
+```
+
+```{r, fig.height=12, fig.width=24}
+# Count of firsts
+firsts %>% 
+  ggplot(aes(decade, fill = gender)) +
+  geom_rect(mapping = aes(xmin = 1945, xmax = 1965, ymin = 0, ymax = 64.3), fill = NA, color = "#C2C2C2", linetype = 3) + ## dotted outline of 50s-60s
+  geom_bar() +
+  
+  scale_y_continuous(expand = expansion(0,0)) +
+  scale_x_continuous(breaks = seq(from = 1730, to =2010, by = 10), labels = paste0(seq(1730, 2010, by = 10), "s"), expand = expansion(0,0)) +
+  #scale_fill_paletteer_d("dutchmasters::view_of_Delft") +
+  scale_fill_manual(name = "", values = c("#83B692", "#721121"),
+                    breaks = c("Male", "Female"))+
+  
+  geom_curve(aes(x = 1739, y = 13, xend = 1730, yend = 1.5), size = 0.5,  ## 1738 arrow
+             arrow = arrow(length = unit(0.2, "inch")), 
+             curvature = 0.4, color = "#F5F5F5") +
+  geom_curve(aes(x = 1915, y = 53, xend = 1942, yend = 58.5), size = 0.5, ## civil rights movement arrow
+             arrow = arrow(length = unit(0.2, "inch")), 
+             curvature = -0.3, color = "#F5F5F5") +
+  geom_rect(mapping = aes(xmin = 1969, xmax = 2001, ymin = 55, ymax = 65), fill = "#525252", color = "#525252") +  ## background of the post civil rights annotation
+  annotate("text", x = 1740, y = 13, label = "1738:\nFirst free African-American community,\nGracia Real de Santa Teresa de Mose in Florida", 
+           hjust = 0, family = "IBM Plex Sans Medium", fontface = "italic", size = 7, color = "#F5F5F5") +
+  annotate("text", x = 1855, y = 30, label = "1865:\nRatification of\nthe 13th Amendment,\nAbolishment of slavery", 
+           hjust = 0, family = "IBM Plex Sans Medium", fontface = "italic", size = 7, color = "#F5F5F5") +
+  annotate("text", x = 1895, y = 50, label = "1950s-1960s:\nCivil Rights Movement", 
+           hjust = 0, family = "IBM Plex Sans Medium", fontface = "italic", size = 7, color = "#F5F5F5") +
+  annotate("text", x = 1970, y = 60, label = "Post Civil Rights Era:\nGreater political\nrepresentation", 
+           hjust = 0, family = "IBM Plex Sans Medium", fontface = "italic", size = 6, color = "#F5F5F5") +
+  
+  labs(title = "Achievements by African Americans Throughout History by Gender\n", 
+       subtitle = "Number of Achievements",
+       x = "", y = "",
+       caption = "Data: Tidy Tuesday\nwww.fishwongy.com") +
+  theme_delabj_dark() +
+  theme(text = element_text(family = "IBM Plex Sans SemiBold", size = 13),
+                      title = element_text("IBM Plex Sans SemiBold", size = 24),
+                      plot.title = element_text("IBM Plex Sans SemiBold", size = 32),
+                      plot.title.position = "plot",
+                      plot.subtitle = element_text("IBM Plex Sans SemiBold", size = 20),
+                      plot.caption = element_text(size = 14),
+                      axis.text = element_text(size = 14, color = "#F5F5F5"),
+                      #axis.text.x = element_blank(),
+                      axis.line.x = element_line(color = "#F5F5F5"),
+                      axis.line.y = element_line(color = "#F5F5F5"),
+                      #axis.line.x = element_blank(),
+                      #axis.line.y = element_line(color = "gray80"),
+                      #panel.grid = element_blank(),
+                      legend.text = element_text(size = 21, family = "IBM Plex Sans Medium"),
+                     # legend.background = element_rect(fill = "#525252", color = "#525252"),
+                      plot.margin = margin(20, 20, 20, 20),
+                      panel.grid.major.x = element_blank(),
+                      panel.grid.minor.x = element_blank(),
+                     # panel.grid.major.y = element_line(color = "gray70"),
+                      panel.grid.minor.y = element_blank(),
+                      #plot.background = element_rect(fill = "#525252", color = "#525252"),
+                     legend.position = c(.2, .785)) +
+  ggsave("black-achievements_gender.png", width = 24, height = 12, dpi = 320) +
+NULL
+```
+
+
+```{r}
+genderblack <- firsts %>% 
+               group_by(category, gender) %>% 
+               count(category,gender) %>%
+               ungroup() %>% 
+               mutate(category = fct_reorder(category, n)) %>%
+               mutate(gender = case_when(str_detect(gender, "African-American Firsts") ~ "Male", TRUE~"Female"))
+  
+```
+
+```{r}
+genderblack %>%
+ggplot(aes(x = category, y = n, fill = gender)) + 
+  geom_col(position = "dodge")+
+  theme_delabj_dark() + 
+  scale_fill_manual(name = "", values = c("#83B692", "#721121"),
+                    breaks = c("Male", "Female"))+
+  scale_y_continuous(position = "right") +
+  theme(legend.position = c(-0.04, 1.035),
+        legend.direction = "horizontal",
+        legend.key.size = unit(0.3, "cm"),
+        legend.text=element_text(size = 22),
+        text = element_text( family="ITC Officina Sans LT Book", size = 13),
+        panel.grid.major = element_line(color = "white", size = 0.3), 
+        panel.grid.minor = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x.top = element_blank(),
+        axis.title.y = element_blank(),
+        #axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.ticks = element_blank(),
+       axis.text.x = element_text(family = "ITC Officina Sans LT Bold", size = 13),
+        #axis.text.y = element_text(size = 10, family = "ITC Officina Sans LT Bold"),
+        plot.title = element_markdown(hjust = 0, vjust=-0.12, size = 24, 
+                                  family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_markdown(hjust = 0, vjust=-1.5, size = 15),
+       plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0, vjust = -2.5, size = 15)) +
+  labs(x = "", y = "", 
+       title = "Achievements by African Americans by Gender and Catagory\n",
+       caption = "Data: Tidy Tuesday\nwww.fishwongy.com") +
+    coord_flip() +
+  ggsave("black-gender.png", width = 18, height = 10, dpi = 320) +
+NULL
+```
+
+```{r}
+gender <- firsts %>%
+  group_by(decade, gender) %>% 
+               count(decade,gender) %>%
+               ungroup() %>%
+  mutate_at(c("gender"), as.factor)
+```
+
+
+```{r}
+gender %>% 
+  ggplot(aes(x = decade, y = n, fill = gender)) +
+  geom_rect(mapping = aes(xmin = 1945, xmax = 1965, ymin = 0, ymax = 64.3), fill = NA, color = "#C2C2C2", linetype = 3) + ## dotted outline of 50s-60s
+  geom_col() + 
+  scale_y_continuous(expand = expansion(0,0)) +
+  scale_x_continuous(breaks = seq(from = 1730, to =2010, by = 10), labels = paste0(seq(1730, 2010, by = 10), "s"), expand = expansion(0,0)) +
+  #scale_fill_paletteer_d("dutchmasters::view_of_Delft") +
+  scale_fill_manual(name = "", values = c("#83B692", "#721121"),
+                    breaks = c("Male", "Female"))+
+  
+  geom_curve(aes(x = 1739, y = 13, xend = 1730, yend = 1.5), size = 0.5,  ## 1738 arrow
+             arrow = arrow(length = unit(0.2, "inch")), 
+             curvature = 0.4, color = "#F5F5F5") +
+  geom_curve(aes(x = 1915, y = 53, xend = 1942, yend = 58.5), size = 0.5, ## civil rights movement arrow
+             arrow = arrow(length = unit(0.2, "inch")), 
+             curvature = -0.3, color = "#F5F5F5") +
+  geom_rect(mapping = aes(xmin = 1969, xmax = 2001, ymin = 55, ymax = 65), fill = "#525252", color = "#525252") +  ## background of the post civil rights annotation
+  annotate("text", x = 1740, y = 13, label = "1738:\nFirst free African-American community,\nGracia Real de Santa Teresa de Mose in Florida", 
+           hjust = 0, family = "IBM Plex Sans Medium", fontface = "italic", size = 7, color = "#F5F5F5") +
+  annotate("text", x = 1855, y = 30, label = "1865:\nRatification of\nthe 13th Amendment,\nAbolishment of slavery", 
+           hjust = 0, family = "IBM Plex Sans Medium", fontface = "italic", size = 7, color = "#F5F5F5") +
+  annotate("text", x = 1895, y = 50, label = "1950s-1960s:\nCivil Rights Movement", 
+           hjust = 0, family = "IBM Plex Sans Medium", fontface = "italic", size = 7, color = "#F5F5F5") +
+  annotate("text", x = 1970, y = 60, label = "Post Civil Rights Era:\nGreater political\nrepresentation", 
+           hjust = 0, family = "IBM Plex Sans Medium", fontface = "italic", size = 6, color = "#F5F5F5") +
+  
+  labs(title = "Achievements by African Americans Throughout History by Gender\n", 
+       subtitle = "Number of Achievements",
+       x = "", y = "",
+       caption = "Data: Tidy Tuesday\nwww.fishwongy.com") +
+  theme_delabj_dark() +
+  theme(text = element_text(family = "IBM Plex Sans SemiBold", size = 13),
+                      title = element_text("IBM Plex Sans SemiBold", size = 24),
+                      plot.title = element_text("IBM Plex Sans SemiBold", size = 32),
+                      plot.title.position = "plot",
+                      plot.subtitle = element_text("IBM Plex Sans SemiBold", size = 20),
+                      plot.caption = element_text(size = 14),
+                      axis.text = element_text(size = 14, color = "#F5F5F5"),
+                      #axis.text.x = element_blank(),
+                      axis.line.x = element_line(color = "#F5F5F5"),
+                      axis.line.y = element_line(color = "#F5F5F5"),
+                      #axis.line.x = element_blank(),
+                      #axis.line.y = element_line(color = "gray80"),
+                      #panel.grid = element_blank(),
+                      legend.text = element_text(size = 21, family = "IBM Plex Sans Medium"),
+                     # legend.background = element_rect(fill = "#525252", color = "#525252"),
+                      plot.margin = margin(20, 20, 20, 20),
+                      panel.grid.major.x = element_blank(),
+                      panel.grid.minor.x = element_blank(),
+                     # panel.grid.major.y = element_line(color = "gray70"),
+                      panel.grid.minor.y = element_blank(),
+                      #plot.background = element_rect(fill = "#525252", color = "#525252"),
+                     legend.position = c(.2, .785))
+```
+
