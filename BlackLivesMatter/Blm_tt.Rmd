@@ -11,7 +11,7 @@ science <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/ti
 ```
 
 ```{r}
-# Clean up data ------
+## Clean up data ------
 ## make gender and category factors
 firsts <- firsts %>% 
   mutate_at(c("gender", "category"), as.factor) %>% 
