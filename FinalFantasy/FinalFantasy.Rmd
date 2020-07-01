@@ -58,7 +58,7 @@ ff_en <- ff_tw %>%
 ff_corpus <- corpus(ff_en)
 ```
 
-Now we're ready to run the sentiment analysis! First we will construct a dictionary object.
+#Construct a dictionary object.
 
 ```{r}
 #Create a dictionary
