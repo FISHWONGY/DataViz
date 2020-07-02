@@ -220,7 +220,7 @@ edge.start <- ends(we_net, es = E(we_net), names = F)[, 1]
 #edge.col <- V(we_net2)$color[edge.start]
 ```
 
-vertex.color = V(we_net)$ego, 
+
 ```{r, fig.width=15, fig.height=15}
 plot(we_net, 
      vertex.label = V(we_net)$name, vertex.label.cex = 2.5, vertex.size = rescale(deg, c(1, 10)),
