@@ -198,7 +198,7 @@ nw_df2 <- nw_df %>%
 
 **Generate network**
 ```{r}
-require("igraph") 
+library("igraph") 
 ```
 
 ```{r}
