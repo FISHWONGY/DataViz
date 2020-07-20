@@ -15,3 +15,11 @@ library(ggrepel)
 ```{r}
 anime <- read_csv(file="https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-04-23/tidy_anime.csv")
 ```
+
+```{r}
+anime$year <- as.numeric(substr(anime$start_date, 1,4))
+anime <- anime %>% 
+            select(1:4, 6:10, 14, 18,20,21, 29)  %>%
+            #mutate(year = as.numeric(year)) %>%
+            mutate(decade = year - year %% 10)
+```
