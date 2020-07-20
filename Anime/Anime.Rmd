@@ -12,7 +12,7 @@ library(ggrepel)
 ```
 
 
-{r}
+```{r}
 anime <- read_csv(file="https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-04-23/tidy_anime.csv")
 ```
 
