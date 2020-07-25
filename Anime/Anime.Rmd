@@ -23,3 +23,25 @@ anime <- anime %>%
             #mutate(year = as.numeric(year)) %>%
             mutate(decade = year - year %% 10)
 ```
+
+```{r}
+producer <- anime %>%
+  group_by(producers) %>% 
+               count(producers) %>%
+               ungroup() %>%
+ # mutate_at(c("producers"), as.factor) %>%
+  drop_na(producers)%>%
+  arrange(-n) 
+```
+
+```{r}
+pro_yr <- anime %>%
+  group_by(producers, decade) %>% 
+  count(producers, decade) %>%
+  ungroup() %>%
+  #mutate_at(c("producers"), as.factor) %>%
+  drop_na(producers, decade)%>%
+  arrange(decade) %>%
+  filter(producers %in% c("TV Tokyo", "Aniplex", "Bandai Visual", "NHK", "Fuji TV", "Sotsu", "Dentsu", "Square Enix",
+                          "AT-X","Kadokawa Shoten", "TBS"))
+```
