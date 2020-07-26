@@ -85,3 +85,49 @@ NULL
 
 p1
 ```
+
+#Producer and year
+```{r, fig.height=12, fig.width=16}
+py1 <- 
+pro_yr %>% 
+  ggplot(aes(decade, n, fill = producers)) +
+  geom_bar(stat = 'identity') +
+  scale_y_continuous(expand = expansion(0,0)) + #breaks = seq(from = 0, to =10, by = 2), labels = seq(0, 10, by = 2), expand = expansion(0,0)
+  scale_x_continuous(breaks = seq(from = 1950, to =2010, by = 10), labels = paste0(seq(1950, 2010, by = 10), "s")) +
+  scale_fill_paletteer_d("dutchmasters::view_of_Delft") +
+  #scale_fill_ghibli_d("LaputaLight", direction = -1) +
+  #scale_fill_evo("Tangela") +
+  labs(title = "Top  <b, style = 'color:#729ec4'>Anime Producers</b> Throughout the Decades\n", 
+       subtitle = "Number of anime produced",
+       x = "", y = "",
+       caption = "Data: Tidy Tuesday\nwww.fishwongy.com") +
+  theme_delabj_dark() +
+  theme(text = element_text(family = "IBM Plex Sans SemiBold", size = 13),
+                      title = element_text("IBM Plex Sans SemiBold", size = 24),
+                      plot.title = element_markdown("IBM Plex Sans SemiBold", size = 36),
+                      plot.title.position = "plot",
+                      plot.subtitle = element_text("IBM Plex Sans SemiBold", size = 25),
+                      plot.caption = element_text(size = 20),
+                      plot.caption.position = "plot",
+                      axis.text = element_text(size = 20, color = "#F5F5F5"),
+                      #axis.text.x = element_blank(),
+                      axis.line.x = element_line(color = "#F5F5F5"),
+                      axis.line.y = element_line(color = "#F5F5F5"),
+                      #axis.line.x = element_blank(),
+                      #axis.line.y = element_line(color = "gray80"),
+                      #panel.grid = element_blank(),
+                      legend.text = element_text(size = 18, family = "IBM Plex Sans Medium"),
+                      legend.title = element_blank(),
+                     # legend.background = element_rect(fill = "#525252", color = "#525252"),
+                      plot.margin = margin(20, 20, 20, 20),
+                      panel.grid.major.x = element_blank(),
+                      panel.grid.minor.x = element_blank(),
+                     # panel.grid.major.y = element_line(color = "gray70"),
+                      panel.grid.minor.y = element_blank(),
+                      #plot.background = element_rect(fill = "#525252", color = "#525252"),
+                      legend.position = c(.2, .725)) +
+  #ggsave("black-achievements.png", width = 24, height = 12, dpi = 320) +
+NULL
+
+py1
+```
