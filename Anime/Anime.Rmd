@@ -137,3 +137,18 @@ py1
    ggsave("photo/producer_patch.png", dpi = 320, width = 18, height = 23)
 ```
 
+#Aggregate mean score 
+```{r}
+pro_s <- anime %>% 
+            select(7, 11) %>%
+            drop_na() %>%
+            group_by(producers) %>%
+            summarise(mean = mean(score)) %>%
+            mutate(mean = round(mean, 2)) %>%
+            #filter(studio %in% c("TV Tokyo", "Aniplex", "Bandai Visual", "NHK", "Fuji TV", "Sotsu", "Dentsu", "Square Enix",
+                         # "AT-X","Kadokawa Shoten", "TBS")) %>%
+            left_join(producer, by = "producers") %>%
+            arrange(-mean)
+
+pro_s
+```
