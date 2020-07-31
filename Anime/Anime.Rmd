@@ -242,3 +242,9 @@ pro_s %>%
 
 ps1
 ```
+
+```{r}
+(p2 / ps1) +
+   ggsave("photo/producer_score_patch.png", dpi = 320, width = 18, height = 23)
+```
+
