@@ -271,3 +271,88 @@ stu_yr <- anime %>%
   filter(studio %in% c("Toei Animation", "Sunrise", "J.C.Staff" , "Madhouse", "Studio Deen", "Production I.G", "A-1 Pictures", "Studio Pierrot", 
                        "Xebec", "TBS"))
 ```
+
+```{r}
+s1 <-
+studio %>%
+  top_n(10) %>%
+  
+ggplot(aes(x = reorder(studio, n), y = n)) + 
+  geom_col(fill = "#729ec4") + #position = "dodge", #83B692
+  theme_delabj_dark() + 
+  scale_y_continuous(position = "right") +
+  geom_text(aes(y = n, label = n), size = 12, nudge_y = -150, color = "white", family="ITC Officina Sans LT Book") +
+  theme(text = element_text( family="ITC Officina Sans LT Book", size = 13),
+        panel.grid.major = element_line(color = "white", size = 0.3), 
+        panel.grid.minor = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x.top = element_blank(),
+        axis.title.y = element_blank(),
+        #axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.ticks = element_blank(),
+        axis.text.x = element_text(family = "ITC Officina Sans LT Bold", size = 25),
+        axis.text.y = element_text(size = 25),
+        #axis.text.y = element_text(size = 10, family = "ITC Officina Sans LT Bold"),
+        plot.title = element_markdown(hjust = 0, vjust=-0.12, size = 36, 
+                                  family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_markdown(hjust = 0, vjust=-1.5, size = 25),
+       plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0, vjust = -2.5, size = 15)) +
+  labs(x = "", y = "", 
+       title = "Top 10  <b, style = 'color:#729ec4'>Anime Studio\n",
+       subtitle = "Number of anime produced by each studio",
+       caption = "") + #Source: MyAnimeList\nwww.fishwongy.com
+    coord_flip() +
+#  ggsave("black-gender.png", width = 18, height = 10, dpi = 320) +
+NULL
+
+s1
+```
+
+```{r}
+sy1 <- 
+stu_yr %>% 
+  ggplot(aes(decade, n, fill = studio)) +
+  geom_bar(stat = 'identity') +
+  scale_y_continuous(breaks = seq(from = 0, to = 8000, by = 2000), labels = seq(0, 8000, by = 2000), expand = expansion(0,0)) + 
+  #breaks = seq(from = 0, to =10, by = 2), labels = seq(0, 10, by = 2), expand = expansion(0,0)
+  scale_x_continuous(breaks = seq(from = 1950, to =2010, by = 10), labels = paste0(seq(1950, 2010, by = 10), "s")) +
+  scale_fill_paletteer_d("dutchmasters::view_of_Delft") +
+  #scale_fill_ghibli_d("LaputaLight", direction = -1) +
+  #scale_fill_evo("Tangela") +
+  labs(title = "Top  <b, style = 'color:#729ec4'>Anime Studio</b> Throughout the Decades\n", 
+       subtitle = "Number of anime produced",
+       x = "", y = "",
+       caption = "Source: MyAnimeList\nwww.fishwongy.com") +
+  theme_delabj_dark() +
+  theme(text = element_text(family = "IBM Plex Sans SemiBold", size = 13),
+                      title = element_text("IBM Plex Sans SemiBold", size = 24),
+                      plot.title = element_markdown("IBM Plex Sans SemiBold", size = 36),
+                      plot.title.position = "plot",
+                      plot.subtitle = element_text("IBM Plex Sans SemiBold", size = 25),
+                      plot.caption = element_text(size = 20),
+                      plot.caption.position = "plot",
+                      axis.text = element_text(size = 20, color = "#F5F5F5"),
+                      #axis.text.x = element_blank(),
+                      axis.line.x = element_line(color = "#F5F5F5"),
+                      axis.line.y = element_line(color = "#F5F5F5"),
+                      #axis.line.x = element_blank(),
+                      #axis.line.y = element_line(color = "gray80"),
+                      #panel.grid = element_blank(),
+                      legend.text = element_text(size = 18, family = "IBM Plex Sans Medium"),
+                      legend.title = element_blank(),
+                     # legend.background = element_rect(fill = "#525252", color = "#525252"),
+                      plot.margin = margin(20, 20, 20, 20),
+                      panel.grid.major.x = element_blank(),
+                      panel.grid.minor.x = element_blank(),
+                     # panel.grid.major.y = element_line(color = "gray70"),
+                      panel.grid.minor.y = element_blank(),
+                      #plot.background = element_rect(fill = "#525252", color = "#525252"),
+                      legend.position = c(.15, .825)) +
+  #ggsave("black-achievements.png", width = 24, height = 12, dpi = 320) +
+NULL
+
+sy1
+```
