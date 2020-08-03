@@ -248,3 +248,26 @@ ps1
    ggsave("photo/producer_score_patch.png", dpi = 320, width = 18, height = 23)
 ```
 
+#For STUDIO
+```{r}
+studio <- anime %>%
+  group_by(studio)  %>% 
+  count(studio) %>%
+  ungroup() %>%
+ # mutate_at(c("studio"), as.factor) %>%
+  drop_na(studio)%>%
+  arrange(-n) #%>%
+  #top_n(10)
+```
+
+```{r}
+stu_yr <- anime %>%
+  group_by(studio, decade) %>% 
+  count(studio, decade) %>%
+  ungroup() %>%
+  #mutate_at(c("producers"), as.factor) %>%
+  drop_na(studio, decade)%>%
+  arrange(decade) %>%
+  filter(studio %in% c("Toei Animation", "Sunrise", "J.C.Staff" , "Madhouse", "Studio Deen", "Production I.G", "A-1 Pictures", "Studio Pierrot", 
+                       "Xebec", "TBS"))
+```
