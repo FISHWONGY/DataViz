@@ -356,3 +356,25 @@ NULL
 
 sy1
 ```
+
+```{r}
+(s1 / sy1) +
+   ggsave("photo/studio_patch.png", dpi = 320, width = 18, height = 23)
+```
+
+#Aggregate mean score 
+```{r}
+stu_s <- anime %>% 
+            select(9, 11) %>%
+            drop_na() %>%
+            group_by(studio) %>%
+            summarise(mean = mean(score)) %>%
+            mutate(mean = round(mean, 2)) %>%
+            #filter(studio %in% c("Toei Animation", "Sunrise", "J.C.Staff" , "Madhouse", "Studio Deen", "Production I.G", 
+             #                    "A-1 Pictures", "Studio Pierrot", "Xebec", "TBS")) %>%
+            left_join(studio, by = "studio") %>%
+            arrange(-mean)
+
+stu_s
+```
+
