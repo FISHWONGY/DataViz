@@ -486,3 +486,15 @@ gen_s <- anime %>%
 gen_s
 ```
 
+```{r}
+gen_sp <- anime %>% 
+            select(8, 13) %>%
+            drop_na() %>%
+            group_by(genre) %>%
+            summarise(mean_pop = mean(popularity)) %>%
+            mutate(mean_pop = round(mean_pop, 0)) %>%
+            left_join(gen_s, by = "genre") %>%
+            arrange(-mean_pop)
+
+gen_sp
+```
