@@ -498,3 +498,52 @@ gen_sp <- anime %>%
 
 gen_sp
 ```
+
+```{r}
+gc1 <- 
+gen_sp %>%
+  ggplot(aes(x = mean_pop, y = mean_score)) + 
+  geom_point(stat = 'identity', group = 1, color = "#729ec4", size = 5) +
+  geom_point(data = gen_sp %>% filter(genre %in% c("Kids","Dementia", "Music", "Adventure")), 
+             aes(x = mean_pop, y = mean_score), colour="#AF7366", size = 5) +
+  geom_point(data = gen_sp %>% filter(genre %in% c("Thriller","Josei", "Mystery", "Psychological", "Shounen")), 
+             aes(x = mean_pop, y = mean_score), colour="#D5BF98", size = 5) +
+  #geom_point(color = ifelse(studio %in% c("Toei Animation", "Sunrise", "J.C.Staff" , "Madhouse", "Studio Deen", 
+                                              #"Production I.G", "A-1 Pictures", "Studio Pierrot","Xebec", "TBS"), '#721121', '#729ec4')) +
+  geom_smooth(method = "lm", se = FALSE, color = "#F5F5F5", alpha = 0.5, size = 0.7) +
+  theme_delabj_dark() +
+  geom_text_repel(data = gen_sp %>% filter(genre %in% c("Kids","Dementia", "Music", "Adventure")),
+            aes(label = genre), color = "#bd7d6f", vjust = "inward", hjust = "inward",  #nudge_y = 0.2, nudge_x = 0, 
+            family="ITC Officina Sans LT Bold", size = 10) +
+   geom_text_repel(data = gen_sp %>% filter(genre %in% c("Thriller","Josei", "Mystery", "Psychological", "Shounen")),
+            aes(label = genre), color = "#D5BF98", vjust = "outward", hjust = "inward",  #nudge_y = 0.2, nudge_x = 0, 
+            family="ITC Officina Sans LT Bold", size = 10) +
+  #delabj::scale_color_delabj(name = "") +
+  #scale_colour_viridis_d(option = "inferno",name = "") +
+  #scale_x_log10(limits = c(1200, 12000)) +
+  scale_y_continuous(position = "right") +
+   #             breaks = c(10, 1000, 100000), labels = c("10", "1,000", "100,000")) +
+
+  theme(text = element_text(size = 9.5, family="ITC Officina Sans LT Bold"),
+        axis.line = element_blank(), 
+        axis.ticks = element_blank(),
+        panel.background = element_blank(),
+        #panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.text.x = element_text(size=20),
+        axis.text.y = element_text(size=20),
+        axis.title=element_text(size=20),
+        plot.title = element_markdown(size = 40, family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_text(size = 25, hjust = 0.985, vjust = 0),
+        plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0, size = 21, family="ITC Officina Sans LT Book")) +
+    labs(y=" ", 
+        x = "\nAverage popularity\n", 
+       title = "Anime <b, style = 'color:#bd7d6f'>popularity</b> v. <b, style = 'color:#D5BF98'>rated score",
+       subtitle = "Mean score",
+      caption = "") #Sources: MyAnimeList\nwww.fishwongy.com
+  #ggsave("photo/studio.png", width = 14, height = 10, dpi = 320) 
+
+gc1
+```
+
