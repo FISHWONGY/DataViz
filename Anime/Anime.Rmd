@@ -625,3 +625,17 @@ NULL
 gs1
 ```
 
+#Producer - number of genre (facet)
+```{r}
+pro_gen <-     anime %>% 
+               group_by(producers, genre) %>% 
+               count(producers, genre) %>%
+               ungroup() %>% 
+               drop_na(producers) %>%
+              # group_by(producers) %>%
+               filter(producers %in% c("TV Tokyo", "Aniplex", "Bandai Visual", "NHK", "Fuji TV", "Sotsu", "Dentsu", "Square Enix",
+                          "AT-X","Kadokawa Shoten", "TBS", "Pony Canyon")) %>%
+               arrange(-n) 
+
+pro_gen
+```
