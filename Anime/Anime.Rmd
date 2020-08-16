@@ -639,3 +639,49 @@ pro_gen <-     anime %>%
 
 pro_gen
 ```
+
+```{r, fig.height=10, fig.width=12}
+pg1 <-
+pro_gen %>%
+  group_by(producers) %>%
+  slice_max(n, n = 10) %>%
+  
+ggplot(aes(x = reorder(genre, n), y = n)) + 
+  #ggplot(aes(x = reorder_within(genre, n, producers), y = n)) + 
+  facet_wrap(~ reorder(producers, -n),  scales = "free", nrow = 4) +
+  geom_col(aes(x = reorder(genre, n), y = n), fill = "#729ec4") + #position = "dodge", #83B692
+  theme_delabj_dark() + 
+  scale_y_continuous(position = "right") +
+# scale_x_discrete(labels = pro_gen[, setNames(as.character(genre), ord)]) + 
+  geom_text(aes(y = n, label = n), size = 12, nudge_y = -12, color = "white", family="ITC Officina Sans LT Book") +
+
+  theme(text = element_text( family="ITC Officina Sans LT Book", size = 13),
+        strip.text = element_text(family = "ITC Officina Sans LT Bold", size = 25, color = "#D5BF98"),
+        panel.grid.major = element_line(color = "white", size = 0.3), 
+        panel.grid.minor = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x.top = element_blank(),
+        axis.title.y = element_blank(),
+        #axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.ticks = element_blank(),
+        axis.text.x = element_text(family = "ITC Officina Sans LT Bold", size = 25),
+        axis.text.y = element_text(size = 25),
+        #axis.text.y = element_text(size = 10, family = "ITC Officina Sans LT Bold"),
+        plot.title = element_markdown(hjust = 0, vjust=-0.12, size = 36, 
+                                  family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_markdown(hjust = 0, vjust=-1.5, size = 25),
+       plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0, vjust = -2.5, size = 15)) +
+  labs(x = "", y = "", 
+       title = "Top 12  <b, style = 'color:#729ec4'>Anime genre</b> by Producers\n",
+       subtitle = "",
+       caption = "") + #Source: MyAnimeList\nwww.fishwongy.com
+    coord_flip() +
+#  ggsave("black-gender.png", width = 18, height = 10, dpi = 320) +
+NULL
+
+pg1
+```
+
