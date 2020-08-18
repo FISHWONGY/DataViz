@@ -734,3 +734,18 @@ pro_gen %>%
 NULL
 ```
 
+#Studio - genre
+```{r}
+stu_gen <-     anime %>% 
+               group_by(studio, genre) %>% 
+               count(studio, genre) %>%
+               ungroup() %>% 
+               drop_na(studio) %>%
+              # group_by(producers) %>%
+               filter(studio %in% c("Toei Animation", "Sunrise", "J.C.Staff" , "Madhouse", "Studio Deen", "Production I.G", 
+                                    "A-1 Pictures", "Studio Pierrot", "Xebec", "OLM", "Bones", "TMS Entertainment")) %>%
+               arrange(-n) 
+
+stu_gen
+```
+
