@@ -58,3 +58,27 @@ ggplot(astronauts, aes(y = total_hrs_sum, x = year_of_mission)) +
 p1
 ```
 
+#Origin of the astronauts.
+```{r}
+countries <- astronauts %>%
+              group_by(nationality, sex) %>%
+              count(nationality, sex)%>%
+              ungroup() %>% 
+              mutate(nationality = recode(nationality,
+                              "Czechoslovakia" = "Slovakia",
+                              "Hungry" = "Hungary",
+                              "Malysia" = "Malaysia",
+                              "Netherland" = "Netherlands",
+                              "U.S.S.R/Russia" = "Russia",
+                              "U.S.S.R/Ukraine" = "Ukraine",
+                              "Korea" = "South Korea",
+                              "Republic of South Africa" = "South Africa",
+                              "U.K." = "United Kingdom",
+                              "U.S." = "United States of America",
+                              "UAE" = "United Arab Emirates")) %>%
+            filter(nationality != "U.K./U.S.") %>%
+            rename("ctry_name" = "nationality",
+                   "nr_of_astros" = "n")
+
+countries
+```
