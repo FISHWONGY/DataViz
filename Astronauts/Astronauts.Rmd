@@ -82,3 +82,10 @@ countries <- astronauts %>%
 
 countries
 ```
+
+# get centroids
+```{r}
+wmap <- getMap(resolution="high")
+centroids <- gCentroid(wmap, byid=TRUE)
+```
+
