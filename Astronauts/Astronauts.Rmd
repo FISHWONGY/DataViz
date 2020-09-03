@@ -89,3 +89,10 @@ wmap <- getMap(resolution="high")
 centroids <- gCentroid(wmap, byid=TRUE)
 ```
 
+# get a data.frame with centroids
+```{r}
+df <- data.frame(centroids)
+d <- cbind(rownames(df), data.frame(df, row.names = NULL))
+colnames(d) = c("ctry_name", "x", "y")
+```
+
