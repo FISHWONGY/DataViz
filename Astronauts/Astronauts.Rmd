@@ -96,3 +96,10 @@ d <- cbind(rownames(df), data.frame(df, row.names = NULL))
 colnames(d) = c("ctry_name", "x", "y")
 ```
 
+#join df on countries
+```{r}
+countries_geo <- left_join(countries, d, by = "ctry_name")
+countries_geo_sf <- sf::st_as_sf(countries_geo, coords = c("x","y"))
+st_crs(countries_geo_sf) = 4326
+```
+
