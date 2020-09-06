@@ -103,3 +103,8 @@ countries_geo_sf <- sf::st_as_sf(countries_geo, coords = c("x","y"))
 st_crs(countries_geo_sf) = 4326
 ```
 
+#world map with countries of origin highlighed with centroid points
+```{r}
+world <- ne_countries(scale = "medium", returnclass = "sf")
+```
+
