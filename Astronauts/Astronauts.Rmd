@@ -108,3 +108,21 @@ st_crs(countries_geo_sf) = 4326
 world <- ne_countries(scale = "medium", returnclass = "sf")
 ```
 
+```{r}
+map <-
+  ggplot() +
+  geom_sf(data = world, fill = "grey", color = "#343E48") +
+  geom_sf(data = countries_geo_sf, color = "#FFD900", size = 1) +
+
+  geom_sf(data = countries_geo_sf, color = "#FFD900", size = 3, alpha = .5) +
+  geom_sf(data = countries_geo_sf, color = "#FFD900", size = 5, alpha = .2) +
+  labs(title = "Astronaut's Countries of Origin")+
+  coord_sf(crs = "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs ") +
+  theme_minimal() +
+  theme(text = element_text(family="ITC Officina Sans LT Book"),
+        plot.background = element_rect(fill = "#343E48", color ="#343E48" ),
+        panel.grid = element_line(color = "grey"),
+        plot.title = element_text(colour = "grey", hjust = .5))
+
+map
+```
