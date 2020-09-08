@@ -126,3 +126,19 @@ map <-
 
 map
 ```
+
+```{r}
+p2 <-
+  (map|p1) +
+  plot_annotation(
+  title = 'HISTORY OF HUMANS IN SPACE \n',
+  caption = 'Source: M. Stavnichuk & T. Corlett (https://doi.org/10.1016/j.lssr.2020.06.003)\nwww.fishwongy.com') & 
+  theme(text = element_text('IBM Plex Sans SemiBold', colour = "#F5F5F5"),
+        plot.title = element_text(size = 26, hjust = .5),
+        plot.caption = element_text(size = 15, family = "ITC Officina Sans LT Book"),
+        plot.margin = unit(c(1,1,1,1), "cm"),
+        plot.background = element_rect(fill = "#343E48")) 
+
+ggsave("photo/space_patch.png", p2, dpi = 320, width = 25, height = 15)
+```
+
