@@ -142,3 +142,13 @@ p2 <-
 ggsave("photo/space_patch.png", p2, dpi = 320, width = 25, height = 15)
 ```
 
+#Plot 2
+```{r}
+library(tidyverse)
+library(hrbrthemes)
+library(vegan)
+library(beyonce)
+library(patchwork)
+library(vapoRwave)
+```
+
