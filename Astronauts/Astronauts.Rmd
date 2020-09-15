@@ -160,3 +160,18 @@ astronauts <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience
 astronauts  <- astronauts %>%
   mutate(occupation = tolower(occupation))
 ```
+
+```{r}
+lengthen_pal <- function(x,shortpal){
+  ncolours <- length(unique(x))
+  newpal <- colorRampPalette(shortpal)(ncolours)
+  return(newpal)
+}
+```
+
+```{r}
+palitra.pal <- c('#96ffff','#52eeff','#17d8ff','#5cbcff','#5cbcff','#a696ff','#e064e6','#ff009f')
+#nb.cols <- length(levels(factor(pdat$art_viol)))
+mycolors <- colorRampPalette(palitra.pal)(8)
+```
+
