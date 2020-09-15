@@ -175,3 +175,9 @@ palitra.pal <- c('#96ffff','#52eeff','#17d8ff','#5cbcff','#5cbcff','#a696ff','#e
 mycolors <- colorRampPalette(palitra.pal)(8)
 ```
 
+```{r}
+palitra <- c('#FFFFDE','#FFE9B3','#FFCC94','#FFA98C','#FF809F','#FF5AC8','#FF52FF')
+pal <- rev(lengthen_pal(x = 1:8, shortpal = beyonce_palette(101)))
+gpal <- beyonce_palette(104)[c(5,4)]
+gpal <- beyonce_palette(74)[c(9,4)]
+```
