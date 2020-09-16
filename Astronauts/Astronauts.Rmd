@@ -181,3 +181,36 @@ pal <- rev(lengthen_pal(x = 1:8, shortpal = beyonce_palette(101)))
 gpal <- beyonce_palette(104)[c(5,4)]
 gpal <- beyonce_palette(74)[c(9,4)]
 ```
+
+```{r}
+p1 <-
+astronauts %>%
+  filter(eva_hrs_mission > 0) %>%
+  ggplot(aes(x = year_of_mission, y = eva_hrs_mission, colour = sex)) + 
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = 'lm') +
+  scale_y_continuous(limits = c(0, 50)) +
+  scale_x_continuous(breaks = seq(from = 1960, to = 2020, by = 10), 
+                     labels = paste0(seq(1960, 2020, by = 10), "s")) +
+  labs(x = "", y = "Extravehicular hours\n") +
+  scale_colour_manual('', values = gpal) + #c("#AF7366", "#78A8D1")
+  theme(legend.position = 'bottom') +
+  theme_delabj_dark() +
+  theme(text = element_text(family="ITC Officina Sans LT Book"),
+        legend.position="top",
+        axis.line = element_blank(), 
+        axis.ticks = element_blank(),
+        panel.background = element_blank(),
+        #panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.text.x = element_text(family="ITC Officina Sans LT Bold"),
+        axis.text.y = element_text(family="ITC Officina Sans LT Bold"),
+        #axis.title=element_text(size=20),
+        plot.title = element_text(family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_text(hjust = 0, vjust = -3, family="ITC Officina Sans LT Book"),
+        plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0, family="ITC Officina Sans LT Book"))
+
+p1
+```
+
