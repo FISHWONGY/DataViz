@@ -214,3 +214,18 @@ astronauts %>%
 p1
 ```
 
+```{r}
+dtable <- astronauts %>% # diversity table
+  count(mission_title, year_of_mission, nationality) %>%
+  pivot_wider(names_from = nationality,
+              values_from = n,
+              values_fill = 0) 
+
+divs <- data.frame(shannon = diversity(dtable[,-c(1,2)]),
+                   dtable[,c(1,2)])
+
+missions <- astronauts %>%
+  distinct(mission_title, year_of_mission) %>%
+  full_join(divs)
+```
+
