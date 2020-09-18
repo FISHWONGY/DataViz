@@ -229,3 +229,38 @@ missions <- astronauts %>%
   full_join(divs)
 ```
 
+```{r}
+p2 <- 
+missions %>%
+  group_by(year_of_mission,shannon) %>%
+  summarize(nmissions = length(mission_title)) %>%
+  filter(shannon > 0) %>%
+  
+ggplot(aes(x = year_of_mission, 
+           y = shannon,
+           size = nmissions)) +
+  geom_point(colour = '#7ADCF6', alpha = 0.5) +
+  scale_x_continuous(breaks = seq(from = 1960, to = 2020, by = 10), 
+                     labels = paste0(seq(1960, 2020, by = 10), "s")) +
+  scale_size(breaks = c(1, 2, 3)) +
+  labs(x = "", y = "Diversity index of astronaut nationalities\n",
+       size = "Number of missions") +
+  theme_delabj_dark() +
+  theme(text = element_text(family="ITC Officina Sans LT Book"),
+        legend.position="top",
+        axis.line = element_blank(), 
+        axis.ticks = element_blank(),
+        panel.background = element_blank(),
+        #panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.text.x = element_text(family="ITC Officina Sans LT Bold"),
+        axis.text.y = element_text(family="ITC Officina Sans LT Bold"),
+        #axis.title=element_text(size=20),
+        plot.title = element_text(family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_text(hjust = 0, vjust = -3, family="ITC Officina Sans LT Book"),
+        plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0, family="ITC Officina Sans LT Book"))
+
+p2
+```
+
