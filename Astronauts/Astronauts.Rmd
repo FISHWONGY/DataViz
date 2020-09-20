@@ -264,3 +264,15 @@ ggplot(aes(x = year_of_mission,
 p2
 ```
 
+# fct_lump() 太多row, group個other出黎
+#summarise(n = n()) 一樣 count(year_of_mission, natcat) 
+```{r}
+singlecountrymissions <- missions %>%
+  filter(shannon == 0) %>%
+  left_join(astronauts %>% select(nationality,mission_title)) %>%
+  mutate(natcat = fct_lump(nationality, n = 6)) %>%
+  group_by(year_of_mission, natcat) %>%
+  summarise(n = n())
+
+singlecountrymissions
+```
