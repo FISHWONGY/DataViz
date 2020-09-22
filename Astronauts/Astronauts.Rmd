@@ -309,3 +309,19 @@ singlecountrymissions %>%
 p3
 ```
 
+```{r}
+png("photo/astronauts_patch.png", width = 12, height = 10, units = 'in',  res = 200)
+((p2 | p1 / p3 + plot_layout(heights = c(2,1), ncol = 1))) +
+  plot_layout(ncol = 2) + 
+  plot_annotation(title = 'Diversity of space missions',
+                  subtitle = 'Collaborative missions between countries, and gender in astronaut extravehicular hours over time',
+                  caption = 'Source: M. Stavnichuk & T. Corlett (https://doi.org/10.1016/j.lssr.2020.06.003)\nwww.fishwongy.com') &  
+  theme(text = element_text('ITC Officina Sans LT Bold', colour = "#F5F5F5"),
+        plot.title = element_text(size = 26, hjust = .5),
+        plot.subtitle = element_text(hjust =  .5),
+        plot.caption = element_text(size = 15, family = "ITC Officina Sans LT Book"),
+        plot.margin = unit(c(1,1,1,1), "cm"),
+        plot.background = element_rect(fill = "#343E48")) 
+dev.off()
+```
+
