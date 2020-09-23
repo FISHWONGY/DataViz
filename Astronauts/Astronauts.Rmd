@@ -325,3 +325,9 @@ png("photo/astronauts_patch.png", width = 12, height = 10, units = 'in',  res = 
 dev.off()
 ```
 
+
+#Table
+```{r}
+astronauts <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-14/astronauts.csv')
+```
+
