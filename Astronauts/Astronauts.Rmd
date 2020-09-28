@@ -406,3 +406,63 @@ NULL
 ```
 
 
+```{r, fig.width=7, fig.height=10}
+ggplot(astro_table) +
+# bars --------------------------------------------------------------------
+  geom_tile(aes(1985, name, height = 0.4, width = 60), fill = "#4e5d6b") +
+  geom_tile(aes(decade, name, fill = decade_missions, height = 0.39)) +
+	annotate("text", 1985, 12.6, label = "'70\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\'10",
+	         colour = "#F5F5F5", family =  "ITC Officina Sans LT Book", vjust = 0, lineheight = 0.8, size = 1.5) +
+# text rows ---------------------------------------------------------------
+  geom_text(aes(1555, name, label = name), hjust = 0, family =  "ITC Officina Sans LT Bold", 
+            colour = "#F5F5F5", size = 3.8, check_overlap = TRUE) +
+  geom_text(aes(1740, name, label = year_of_birth), hjust = 1, family =  "ITC Officina Sans LT Book", 
+            colour = "#F5F5F5", size = 3.5, check_overlap = TRUE) +
+  geom_text(aes(1810, name, label = total_hrs_sum), hjust = 1, family =  "ITC Officina Sans LT Book", 
+            colour = "#F5F5F5", size = 3.5, check_overlap = TRUE) +
+  geom_text(aes(1875, name, label = total_eva_hrs), hjust = 1, family =  "ITC Officina Sans LT Book", 
+            colour = "#F5F5F5", size = 3.5, check_overlap = TRUE) +
+  geom_text(aes(1925, name, label = total_number_of_missions), hjust = 1, family =  "ITC Officina Sans LT Book", 
+           colour = "#F5F5F5",size = 3.5, check_overlap = TRUE) +
+# column titles -----------------------------------------------------------
+  annotate("text", 1740, 13.8, label = toupper("year of\nbirth"),colour = "#F5F5F5", family = "ITC Officina Sans LT Book", 
+           hjust = 1, vjust = 0, lineheight = 0.8, size = 3) +
+  annotate("text", 1810, 13.8, label = toupper("total mission\nhours"), colour = "#F5F5F5", family =  "ITC Officina Sans LT Book", 
+           hjust = 1, vjust = 0, lineheight = 0.8, size = 3) +
+  annotate("text", 1875, 13.8, label = toupper("total eva\nhours"), colour = "#F5F5F5", family =  "ITC Officina Sans LT Book",
+           hjust = 1, vjust = 0, lineheight = 0.8, size = 3) +
+  annotate("text", 1925, 13.8, label = toupper("total\nmissions"), colour = "#F5F5F5",family =  "ITC Officina Sans LT Book",
+           hjust = 1, vjust = 0, lineheight = 0.8, size = 3) +
+# stars -------------------------------------------------------------------
+  geom_text(data = subset(astro_table, total_hrs_sum == max(astro_table$total_hrs_sum)), aes(1775, name, label = "★"), family = "Apple Symbols", colour = "darkgoldenrod1") +
+  geom_text(data = subset(astro_table, total_eva_hrs == max(astro_table$total_eva_hrs)), aes(1845, name, label = "★"), family = "Apple Symbols", colour = "darkgoldenrod1") +
+  geom_text(data = subset(astro_table, total_number_of_missions == max(astro_table$total_number_of_missions)), aes(1910, name, label = "★"), family = "Apple Symbols", colour = "darkgoldenrod1") +
+# table lines -------------------------------------------------------------
+  geom_hline(yintercept = seq(0.5, 13.5, by = 1), size = 0.25, colour = "grey70") +
+# colorbar ----------------------------------------------------------------
+  annotate("text", 1985, 14.7, label = toupper("missions\nper decade"), colour = "#F5F5F5",
+           family =  "ITC Officina Sans LT Book", lineheight = 0.8, size = 2.5) +
+  geom_tile(data = colorbar, aes(decade, 14.2, fill = decade_missions, height = 0.25)) +
+  annotate("text", 1985, 13.6, label = toupper("fewer\t\t\tmore"), colour = "#F5F5F5",
+           family =  "ITC Officina Sans LT Book", vjust = 0, lineheight = 0.8, size = 2.5) +
+# scales, theme, etc ------------------------------------------------------
+  coord_fixed(ratio = 20, clip = "off") +
+  scale_x_continuous(limits = c(1555, 2015), expand = c(0, 0)) +
+  scale_fill_gradient(low = "lightskyblue1", high = "purple4") +
+	labs(
+		title = "<b, style = 'color:#FFD900'>Female astronauts</b> with more than <b, style = 'color:#e3cd4f'>4000</b> mission hours",
+		caption = "Source: M. Stavnichuk & T. Corlett (https://doi.org/10.1016/j.lssr.2020.06.003)\nwww.fishwongy.com"
+		) +
+  theme_void() +
+  theme(
+    legend.position = "none",
+    plot.background = element_rect(fill = "#343E48", color = "#343E48"),
+    plot.margin = margin(10, 5, 10, 5),
+		plot.title = element_markdown(family =  "ITC Officina Sans LT Bold", margin = margin(0, 0, 15, 0), colour = "#F5F5F5",),
+		plot.caption = element_text(family =  "ITC Officina Sans LT Book", hjust = 0, size = 6.5,colour = "#F5F5F5",)
+  ) +
+  ggsave("photo/astronauts_table_dark.png", dpi = 320, width = 7, height = 10) +
+  
+NULL
+```
+
