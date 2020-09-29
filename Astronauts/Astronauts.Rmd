@@ -466,3 +466,21 @@ ggplot(astro_table) +
 NULL
 ```
 
+#For more than 10,000 hrs
+```{r}
+astro_table <- astronauts %>% 
+  mutate(decade = year_of_mission %/% 10 * 10) %>% 
+	group_by(name, decade) %>% 
+  add_count(name = "decade_missions") %>% 
+  ungroup() %>% 
+  distinct(year_of_birth, name, total_number_of_missions, total_hrs_sum, total_eva_hrs, year_of_mission, decade, decade_missions) %>% 
+  mutate(
+    name = fct_reorder(name, total_hrs_sum),
+    total_hrs_sum = round(total_hrs_sum),
+    total_eva_hrs = round(total_eva_hrs, 1)
+  ) %>% 
+  filter(total_hrs_sum > 10000)
+
+colorbar <- data.frame(name = "colorbar", decade = seq(1960, 2010, by = 10), decade_missions = 1:6)
+```
+
