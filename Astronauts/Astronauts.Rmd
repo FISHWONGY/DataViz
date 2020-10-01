@@ -484,3 +484,298 @@ astro_table <- astronauts %>%
 colorbar <- data.frame(name = "colorbar", decade = seq(1960, 2010, by = 10), decade_missions = 1:6)
 ```
 
+```{r, fig.width=7, fig.height=10}
+ggplot(astro_table) +
+# bars --------------------------------------------------------------------
+  geom_tile(aes(1985, name, height = 0.4, width = 60), fill = "#4e5d6b") +
+  geom_tile(aes(decade, name, fill = decade_missions, height = 0.39)) +
+	annotate("text", 1985, 29.6, label = "'70\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\'10", colour = "#F5F5F5", 
+	         family = "ITC Officina Sans LT Book", vjust = 0, lineheight = 0.8, size = 1.5) +
+# text rows ---------------------------------------------------------------
+  geom_text(aes(1555, name, label = name), hjust = 0, family = "ITC Officina Sans LT Bold", 
+            color = "#F5F5F5", size = 3.8, check_overlap = TRUE) +
+  geom_text(aes(1740, name, label = year_of_birth), hjust = 1, family = "ITC Officina Sans LT Book", color = "#F5F5F5", size = 3.5, check_overlap = TRUE) +
+  geom_text(aes(1810, name, label = total_hrs_sum), hjust = 1, family = "ITC Officina Sans LT Book", 
+            color = "#F5F5F5", size = 3.5, check_overlap = TRUE) +
+  geom_text(aes(1875, name, label = total_eva_hrs), hjust = 1, family = "ITC Officina Sans LT Book", 
+            color = "#F5F5F5", size = 3.5, check_overlap = TRUE) +
+  geom_text(aes(1925, name, label = total_number_of_missions), hjust = 1, family = "ITC Officina Sans LT Book", 
+            color = "#F5F5F5", size = 3.5, check_overlap = TRUE) +
+# column titles -----------------------------------------------------------
+  annotate("text", 1740, 30.8, label = toupper("year of\nbirth"), color = "#F5F5F5", family = "ITC Officina Sans LT Book", 
+           hjust = 1, vjust = 0, lineheight = 0.8, size = 3) +
+  annotate("text", 1810, 30.8, label = toupper("total mission\nhours"), color = "#F5F5F5",  family = "ITC Officina Sans LT Book", 
+           hjust = 1, vjust = 0, lineheight = 0.8, size = 3) +
+  annotate("text", 1875, 30.8, label = toupper("total eva\nhours"), color = "#F5F5F5", family = "ITC Officina Sans LT Book", 
+           hjust = 1, vjust = 0, lineheight = 0.8, size = 3) +
+  annotate("text", 1925, 30.8, label = toupper("total\nmissions"), color = "#F5F5F5",  family = "ITC Officina Sans LT Book", 
+           hjust = 1, vjust = 0, lineheight = 0.8, size = 3) +
+# stars -------------------------------------------------------------------
+  geom_text(data = subset(astro_table, total_hrs_sum == max(astro_table$total_hrs_sum)), aes(1775, name, label = "★"), family = "Apple Symbols", colour = "darkgoldenrod1") +
+  geom_text(data = subset(astro_table, total_eva_hrs == max(astro_table$total_eva_hrs)), aes(1845, name, label = "★"), family = "Apple Symbols", colour = "darkgoldenrod1") +
+  geom_text(data = subset(astro_table, total_number_of_missions == max(astro_table$total_number_of_missions)), aes(1910, name, label = "★"), family = "Apple Symbols", colour = "darkgoldenrod1") +
+# table lines -------------------------------------------------------------
+  geom_hline(yintercept = seq(0.5, 30.5, by = 1), size = 0.25, colour = "grey70") +
+# colorbar ----------------------------------------------------------------
+  annotate("text", 1985, 32.3, label = toupper("missions\nper decade"), color = "#F5F5F5",  
+           family = "ITC Officina Sans LT Book", lineheight = 0.8, size = 2.5) +
+  geom_tile(data = colorbar, aes(decade, 31.5, fill = decade_missions, height = 0.25)) +
+  annotate("text", 1985, 30.8, label = toupper("fewer\t\t\tmore"), color = "#F5F5F5", 
+           family = "ITC Officina Sans LT Book", vjust = 0, lineheight = 0.8, size = 2.5) +
+# scales, theme, etc ------------------------------------------------------
+  coord_fixed(ratio = 20, clip = "off") +
+  scale_x_continuous(limits = c(1555, 2015), expand = c(0, 0)) +
+  scale_fill_gradient(low = "lightskyblue1", high = "purple4") +
+	labs(
+		title = "Astronauts with more than  <b, style = 'color:#e3cd4f'>10 000</b> mission hours",
+		caption = "Source: M. Stavnichuk & T. Corlett (https://doi.org/10.1016/j.lssr.2020.06.003)\nwww.fishwongy.com"
+		) +
+  theme_void() +
+  theme(
+    legend.position = "none",
+    plot.background = element_rect(fill = "#343E48", color = "#343E48"),
+    plot.margin = margin(30, 10, 20, 10),
+		plot.title = element_markdown(family = "ITC Officina Sans LT Bold", margin = margin(0, 0, 5, 0), color = "#F5F5F5"),
+		plot.caption = element_text(family = "ITC Officina Sans LT Book", hjust = 0, size = 6.5, colour = "#F5F5F5")
+  ) +
+  ggsave("photo/astronauts_table2.png", dpi = 320, width = 7, height = 10) +
+NULL
+```
+
+
+
+
+
+
+#Female stat
+
+#Map of globe w/ M&F astros
+```{r}
+countries <- astronauts %>%
+              group_by(nationality, sex) %>%
+              count(nationality, sex)%>%
+              ungroup() %>% 
+              mutate(nationality = recode(nationality,
+                              "Czechoslovakia" = "Slovakia",
+                              "Hungry" = "Hungary",
+                              "Malysia" = "Malaysia",
+                              "Netherland" = "Netherlands",
+                              "U.S.S.R/Russia" = "Russia",
+                              "U.S.S.R/Ukraine" = "Ukraine",
+                              "Korea" = "South Korea",
+                              "Republic of South Africa" = "South Africa",
+                              "U.K." = "United Kingdom",
+                              "U.S." = "United States of America",
+                              "UAE" = "United Arab Emirates")) %>%
+            filter(nationality != "U.K./U.S.") %>%
+            rename("ctry_name" = "nationality",
+                   "nr_of_astros" = "n")
+
+countries
+```
+
+# get centroids
+```{r}
+wmap <- getMap(resolution="high")
+centroids <- gCentroid(wmap, byid=TRUE)
+```
+
+# get a data.frame with centroids
+```{r}
+df <- data.frame(centroids)
+d <- cbind(rownames(df), data.frame(df, row.names = NULL))
+colnames(d) = c("ctry_name", "x", "y")
+
+d_female <- d
+d_female$x <- d_female$x - 3
+d_female$y <- d_female$y - 3
+```
+
+```{r}
+countries_m <- countries %>%
+  filter(sex == "male")
+
+countries_f <- countries %>%
+  filter(sex == "female")
+```
+
+#join df on countries
+```{r}
+countries_geo_m <- left_join(countries_m, d, by = "ctry_name")
+countries_geo_f <- left_join(countries_f, d_female, by = "ctry_name")
+countries_geo <- rbind(countries_geo_m, countries_geo_f)
+countries_geo_sf <- sf::st_as_sf(countries_geo, coords = c("x","y"))
+st_crs(countries_geo_sf) = 4326
+```
+
+#world map with countries of origin highlighed with centroid points
+```{r}
+world <- ne_countries(scale = "medium", returnclass = "sf")
+```
+
+
+```{r}
+#gpal <- beyonce_palette(104)[c(5,4)]
+gpal <- beyonce_palette(60)[c(8,3)]
+```
+
+```{r}
+map <-
+  ggplot() +
+  geom_sf(data = world, fill = "grey", color = "#343E48") +
+  geom_sf(data = countries_geo_sf, aes(color = sex), size = 1) +
+
+  geom_sf(data = countries_geo_sf, aes(color = sex), size = 3, alpha = .5) +
+  geom_sf(data = countries_geo_sf, aes(color = sex), size = 5, alpha = .2) +
+  scale_colour_manual('', values = gpal, #c("#E28772", "#7ADCF6")
+                      labels = c("Female", "Male")) +
+  labs(title = "Astronaut's Countries of Origin",
+       caption = 'Source: M. Stavnichuk & T. Corlett (https://doi.org/10.1016/j.lssr.2020.06.003)\nwww.fishwongy.com')+
+  coord_sf(crs = "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs ") +
+  theme_minimal() +
+  theme(text = element_text(family="ITC Officina Sans LT Book"),
+        legend.position="top",
+        legend.text = element_text(color = "grey", size = 15),
+        plot.background = element_rect(fill = "#343E48", color ="#343E48" ),
+        panel.grid = element_line(color = "grey"),
+        plot.title = element_text(family="ITC Officina Sans LT Bold", colour = "#F5F5F5", hjust = .5, size = 20),
+        plot.caption = element_text(family="ITC Officina Sans LT Book", colour = "#F5F5F5", hjust = 0, size = 15))
+
+map
+```
+
+```{r}
+female <- astronauts %>% 
+          filter(sex == "female") %>%
+          select(6,8,14,15)  %>% 
+          mutate(decade = year_of_mission %/% 10 * 10) %>%
+          mutate(natcat = fct_lump_n(nationality, n = 5)) %>%
+          group_by(year_of_mission, natcat) %>%
+          summarise(n = n())
+
+female
+```
+
+```{r}
+p4 <- 
+female %>%
+  ggplot(aes(x = year_of_mission, y = n, 
+             fill = natcat, colour = natcat)) +
+  geom_col(width = 1) +
+  scale_x_continuous(breaks = seq(from = 1960, to = 2020, by = 10), 
+                     labels = paste0(seq(1960, 2020, by = 10), "s")) +
+  scale_y_continuous(breaks = c(2,4,6,8,10)) +
+  scale_fill_manual('', values = c("#A65141", "#E7CDC2", "#394165", "#80A0C7", "#FCF9F0",  "#B1934A")) +
+  scale_colour_manual('', values = c("#A65141", "#E7CDC2", "#394165", "#80A0C7", "#FCF9F0",  "#B1934A")) +
+  #scale_fill_newRetro(name = "") +
+  #scale_fill_paletteer_d("dutchmasters::pearl_earring") +
+  #scale_color_paletteer_d("dutchmasters::pearl_earring") +
+ # vapoRwave::scale_colour_newRetro(name = "") +
+  labs(x = "", y = "",
+       title = "Number of <b, style = 'color:#FFD900'>female astronauts</b> over the year") +
+  theme_delabj_dark() +
+  theme(text = element_text(family="ITC Officina Sans LT Book"),
+        legend.position="top",
+        legend.text = element_text(size = 16),
+        axis.line = element_blank(), 
+        axis.ticks = element_blank(),
+        panel.background = element_blank(),
+        #panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.text.x = element_text(family="ITC Officina Sans LT Bold"),
+        axis.text.y = element_text(family="ITC Officina Sans LT Bold"),
+        #axis.title=element_text(size=20),
+        plot.title = element_markdown(family="ITC Officina Sans LT Bold", size = 25),
+        plot.subtitle = element_text(hjust = 0, vjust = -3, family="ITC Officina Sans LT Book"),
+        plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0, family="ITC Officina Sans LT Book"))
+
+p4
+```
+
+
+
+```{r}
+p5 <- 
+astronauts %>% 
+          filter(sex == "female") %>%
+          select(6,8,14,15)  %>% 
+          mutate(decade = year_of_mission %/% 10 * 10) %>%
+          mutate(occcat = fct_lump_n(occupation, n = 5)) %>%
+          group_by(occcat) %>%
+          summarise(n = n()) %>%
+          mutate(occcat = recode(occcat,
+                              "pilot" = "Pilot",
+                              "flight engineer" = "Flight engineer",
+                              "commander" = "Commander")) %>%
+  
+ggplot(aes(x = reorder(occcat, n), y = n)) + 
+  geom_col(fill = "#729ec4", color = "#729ec4") + #position = "dodge", #83B692
+  theme_delabj_dark() + 
+  scale_y_continuous(position = "right") +
+  geom_text(aes(y = n, label = n), nudge_y = 4, color = "white", family="ITC Officina Sans LT Bold") +
+  theme(text = element_text( family="ITC Officina Sans LT Book", size = 13),
+        panel.grid.major = element_line(color = "white", size = 0.2), 
+        panel.grid.minor = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x.top = element_blank(),
+        axis.title.y = element_blank(),
+        #axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.ticks = element_blank(),
+        axis.text.x = element_text(family = "ITC Officina Sans LT Bold"),
+        #axis.text.y = element_text(size = 25),
+        #axis.text.y = element_text(size = 10, family = "ITC Officina Sans LT Bold"),
+        plot.title = element_markdown(hjust = 0, vjust=-0.12, size = 25, 
+                                  family="ITC Officina Sans LT Bold"),
+        plot.subtitle = element_markdown(hjust = 0, vjust=-1.5),
+       plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0, vjust = -2.5)) +
+  labs(x = "", y = "", 
+       title = "Occupation of <b, style = 'color:#FFD900'>female astronauts</b> on the space\n",
+       subtitle = "",
+       caption = "") + #Source: MyAnimeList\nwww.fishwongy.com
+    coord_flip() +
+#  ggsave("black-gender.png", width = 18, height = 10, dpi = 320) +
+NULL
+
+p5
+```
+
+```{r}
+p6 <-
+  (map|(p4/p5)) +
+  patchwork::plot_annotation(
+  title = 'HISTORY OF FEMALE ASTRONAUTS IN SPACE\n',
+  caption = 'Source: M. Stavnichuk & T. Corlett (https://doi.org/10.1016/j.lssr.2020.06.003)\nwww.fishwongy.com') &
+  theme(text = element_text('ITC Officina Sans LT Bold', colour = "#F5F5F5"),
+        plot.title = element_text(size = 26, hjust = .5),
+        plot.caption = element_text(size = 15, family = "ITC Officina Sans LT Book"),
+        plot.margin = unit(c(1,1,1,1), "cm"),
+        plot.background = element_rect(fill = "#343E48")) 
+
+ggsave("photo/female_patch2.png", p6, dpi = 320, width = 25, height = 15)
+```
+
+```{r}
+(map|(p4/p5)) +
+ 
+   ggsave("photo/female_patch.png", dpi = 320, width = 25, height = 15)
+```
+
+```{r}
+png("photo/female_patch.png", width = 25, height = 15, units = 'in',  res = 200)
+((map | p4 / p5 + plot_layout(heights = c(2,1), ncol = 1))) +
+  plot_layout(ncol = 2) + 
+  plot_annotation(title = 'HISTORY OF FEMALE ASTRONAUTS IN SPACE\n',
+                  #subtitle = 'Collaborative missions between countries, and gender in astronaut extravehicular hours over time',
+                  caption = 'Source: M. Stavnichuk & T. Corlett (https://doi.org/10.1016/j.lssr.2020.06.003)\nwww.fishwongy.com') &  
+  theme(text = element_text('ITC Officina Sans LT Bold', colour = "#F5F5F5"),
+        plot.title = element_text(size = 26, hjust = .5),
+        plot.subtitle = element_text(hjust =  .5),
+        plot.caption = element_text(size = 15, family = "ITC Officina Sans LT Book"),
+        plot.margin = unit(c(1,1,1,1), "cm"),
+        plot.background = element_rect(fill = "#343E48")) 
+dev.off()
+```
