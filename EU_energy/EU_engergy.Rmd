@@ -27,3 +27,10 @@ library(geofacet)
 library(ggnewscale)
 library(tidytuesdayR)
 ```
+```{r}
+tuesdata <- tidytuesdayR::tt_load(2020, week = 32)
+energy_types <- tuesdata$energy_types
+
+energy_types <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-08-04/energy_types.csv')
+```
+
