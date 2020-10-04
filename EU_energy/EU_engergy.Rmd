@@ -33,4 +33,25 @@ energy_types <- tuesdata$energy_types
 
 energy_types <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-08-04/energy_types.csv')
 ```
+```{r}
+energy_clean <- energy_types %>% 
+  filter(level == "Level 1") %>%
+  gather(year, n, 5:7, convert = TRUE) %>% 
+  select(-level) %>% 
+  mutate(
+    country_name = case_when(
+      country == "EL" ~ "Greece",
+      country == "UK" ~ "United Kingdom",
+      TRUE ~ country_name
+    ),
+    gtype = case_when(
+      !type %in% c("Nuclear", "Conventional thermal") ~ "Renewable",
+      TRUE ~ type
+    )
+  ) %>% 
+  rename(code = country, name = country_name) %>% 
+  rows_update(tibble(code = "MT", type = "Other", year = 2018, n = 172), by = c("code", "type", "year"))
+
+energy_clean
+```
 
