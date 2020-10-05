@@ -55,3 +55,12 @@ energy_clean <- energy_types %>%
 energy_clean
 ```
 
+```{r geofacet - grid}
+eu_grid <- geofacet::eu_grid1
+eu_grid[42,] <- list(row = 6, col = 10, code = "GE", name = "Georgia")
+eu_grid <- eu_grid %>% 
+  filter(!code %in% c("IS", "CH", "BY", "RU", "MD")) %>%
+  mutate(name = ifelse(str_detect(name, "Macedonia"), "North Macedonia", name)) %>%
+  drop_na()
+```
+
