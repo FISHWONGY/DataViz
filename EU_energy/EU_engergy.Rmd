@@ -64,3 +64,13 @@ eu_grid <- eu_grid %>%
   drop_na()
 ```
 
+```{r summary}
+prop_eu <- energy_clean %>% 
+  filter(year == 2018) %>% 
+  group_by(name) %>% 
+  summarise(
+    total = sum(n),
+    p_clean = sum(n[gtype != "Conventional thermal"])/total,
+  )
+```
+
