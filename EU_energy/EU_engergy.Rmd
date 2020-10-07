@@ -74,3 +74,18 @@ prop_eu <- energy_clean %>%
   )
 ```
 
+```{r}
+data_plot <- energy_clean %>% 
+  filter(year == 2018) %>% 
+  mutate(
+    code = recode(code, "UK" = "GB", "EL" = "GR")
+  ) %>% 
+  count(code, name , year, gtype, wt = n) %>% 
+  group_by(code) %>% 
+  mutate(p = n/sum(n)) %>% 
+  ungroup() %>% 
+  left_join(prop_eu)
+
+data_plot
+```
+
