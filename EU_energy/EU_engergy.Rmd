@@ -89,3 +89,66 @@ data_plot <- energy_clean %>%
 data_plot
 ```
 
+```{r pies plot}
+pies <- 
+  data_plot %>% 
+  ggplot() +
+    aes(x0 = 0, y0 = 0) +
+    stat_pie(
+      aes(r0 = 0.7, r = 1, amount = p, fill = gtype),
+      color = "white",
+      size = 1,
+      show.legend = FALSE
+    ) +
+    scale_fill_manual(
+      values = c("#ECBA82", "#2E933C", "#81C14B")
+    ) +
+    new_scale_fill() +
+    geom_circle(
+      aes(r = 0.675, fill = p_clean),
+      color = NA
+    ) +
+    scale_fill_fermenter(
+      type = "div", 
+      direction = 1,
+      labels = c("25%", "50%", "75%"),
+      guide = guide_colorsteps(
+        title = "Clean Energy Share", 
+        title.position = "top"
+      )
+    ) +
+    geom_text(
+      aes(x = 0, y = 0, label = str_glue("{comma(total, .01)}\nGWh")), 
+      color = "white",
+      family = "ITC Officina Sans LT Book"
+    ) +
+    coord_fixed() +
+    facet_geo(~code, grid = eu_grid, label = "name") +
+    theme_void(base_family = "IBM Plex Sans") +
+    theme(
+      strip.text = element_text(
+        size = 16,
+        margin = margin(t = 10, b = 10)
+      ),
+      legend.position = "bottom",
+      legend.title = element_text(hjust = 0.5, size = 16),
+      legend.key.width = grid::unit(15, "mm"),
+      legend.key.height = grid::unit(3, "mm"),
+      legend.text = element_text(size = 14)
+    )
+    
+piesG <- ggplotGrob(pies + theme(legend.position = "none"))
+legendG <- cowplot::get_legend(pies)
+```
+
+```{r notes}
+notes <- tribble(
+  ~x, ~y, ~label,
+  0, -4.5, "**Albania** is dependent on hydroelectricity, with a share in its production of 100%. Still, its topography has the potential to supply power from wind, sun, and soil.",
+  -3, 0.5, "**France** is the second largest producer of energy in the region, and has the largest share of nuclear electricity (71.3%) in the world.", 
+  1, 1.75, "**Germany** is the country that produced the most energy in 2018, 12.6% was nuclear energy and 31.3% renewable energy.",
+  -0.5, 3.15, "Much of **Norway**'s electricity is generated from hydropower (95%) due to the natural advantage of its topography with abundant valleys and steep rivers.", 
+  4, 0.5, "**Montenegro** leads the energy transition in the region. In 2018 the production of clean energy increased by more than 100%, compared to the previous year."
+)
+```
+
