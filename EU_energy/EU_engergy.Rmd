@@ -152,3 +152,69 @@ notes <- tribble(
 )
 ```
 
+```{r plot}
+plot <- qplot() +
+  geom_curve(
+    aes(x = 1.5, y = -3.25, xend = 4, yend = 0.16), 
+    size = 2, 
+    curvature = 0.3, 
+    color = "white", 
+    lineend = "round"
+  ) +
+  annotation_custom(
+    piesG,
+    xmin = -5, xmax = 5,
+    ymin = -5, ymax = 5
+  ) +
+  annotation_custom(
+    legendG,
+    xmin = -5, xmax = -2.2,
+    ymin = -3.5, ymax = -3
+  ) +
+  geom_textbox(
+    data = notes,
+    aes(x, y, label = label),
+    family = "ITC Officina Sans LT Book",
+    lineheight = 1.5,
+    # halign = 0,
+    width = 0.14,
+    box.color = NA,
+    fill = NA,
+  ) +
+  geom_textbox(
+    aes(
+      x = -5, y = 5, 
+      label = "<span style='font-size:42pt'>Clean Energy Producers, 2018</span>
+  <br><br>
+  <span style='font-size:15pt'>Total net energy produced (GWh) by european countries in 2018, and its distribution by <b style='color:#ECBA82'>conventional thermal</b>, <b style='color:#2E933C'>nuclear</b> and <b style='color:#81C14B'>renewable</b> energy.</span>
+  <br><br>
+  <i style='font-size:10pt;color:#737373;'>**GWh**: Energy generated or consumed by 1 GW of power for one hour.<br>
+**How Much Power is 1 GW?** 110 Million LEDs, on typical performance.</i>"
+    ),
+    family = "ITC Officina Sans LT Book",
+    width = unit(27, "lines"),
+    lineheight = 2,
+    hjust = 0,
+    vjust = 1,
+    fill = NA,
+    box.color = NA,
+  ) +
+  scale_x_continuous(limits = c(-5,5), breaks = -5:5) +
+  scale_y_continuous(limits = c(-5,5), breaks = -5:5) +
+  labs(caption = "Source: Eurostat") +
+  # theme_light() +
+  theme_void() +
+  theme(
+    plot.caption = element_text(
+        hjust = 0.5,
+        size = 10,
+        family = "ITC Officina Sans LT Book",
+        margin = margin(b = 30)
+      ),
+    plot.background = element_rect(fill = "#f0f0f0", color = NA)
+  )
+  
+ggsave("photo/plot.pdf", plot, width = 20, height = 25, device = cairo_pdf)
+plot
+```
+
