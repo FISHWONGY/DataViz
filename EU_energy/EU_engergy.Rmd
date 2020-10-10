@@ -218,3 +218,13 @@ ggsave("photo/plot.pdf", plot, width = 20, height = 25, device = cairo_pdf)
 plot
 ```
 
+
+#plot 2
+```{r}
+library(tidyverse)
+library(tidytuesdayR)
+library(magrittr)
+library(sf)
+library(rnaturalearth)
+library(ggtext)
+```
