@@ -228,3 +228,10 @@ library(sf)
 library(rnaturalearth)
 library(ggtext)
 ```
+
+```{r}
+df_energy <- tt_load_gh(last_tuesday()) %>% 
+  tt_download() %>% 
+  extract2(1)
+```
+
