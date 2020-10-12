@@ -235,3 +235,9 @@ df_energy <- tt_load_gh(last_tuesday()) %>%
   extract2(1)
 ```
 
+```{r}
+# check
+df_energy %>% 
+  distinct(type)
+```
+
