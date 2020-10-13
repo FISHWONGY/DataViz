@@ -241,3 +241,22 @@ df_energy %>%
   distinct(type)
 ```
 
+# CLEAN --- 
+```{r}
+df_energy_tidy <- df_energy %>% 
+  pivot_longer(cols = c(`2016`:`2018`),
+                        names_to = "year",
+                        values_to = "value") %>% 
+  mutate(type = case_when(
+    type == "Conventional thermal" ~ "Fossil fuels",
+    type %in% c("Hydro",
+                "Pumped hydro power",
+                "Wind",
+                "Solar",
+                "Geothermal") ~ "Renewable",
+    TRUE ~ type
+  ))
+
+df_energy_tidy 
+```
+
