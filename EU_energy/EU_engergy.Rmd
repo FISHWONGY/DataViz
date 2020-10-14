@@ -260,3 +260,16 @@ df_energy_tidy <- df_energy %>%
 df_energy_tidy 
 ```
 
+# is Europe getting greener? ----
+
+# define custom function
+```{r}
+percent_change <- function (previous, new) {
+  
+  x <- ((new - previous)/previous) * 100
+  
+  return(x)
+  
+}
+```
+
