@@ -273,3 +273,18 @@ percent_change <- function (previous, new) {
 }
 ```
 
+# find percentage change between 2016 and 2018
+```{r}
+df_renewable <- df_energy_tidy %>% 
+  filter(type == "Renewable") %>% 
+  group_by(year, country, country_name) %>% 
+  summarise(total = sum(value, na.rm = T)) %>% 
+  pivot_wider(names_from = "year",
+              values_from = "total",
+              names_prefix = "total_") %>% 
+  mutate(change = percent_change(total_2016, total_2018)) %>% 
+  arrange(change %>% desc())
+
+df_renewable
+```
+
