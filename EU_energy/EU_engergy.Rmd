@@ -288,3 +288,11 @@ df_renewable <- df_energy_tidy %>%
 df_renewable
 ```
 
+# MAP ----
+```{r}
+st_europe <- ne_countries(continent = "Europe",
+                          scale = "medium",
+                          returnclass = "sf") %>% 
+  select(name, geometry)
+```
+
