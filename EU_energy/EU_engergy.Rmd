@@ -296,3 +296,13 @@ st_europe <- ne_countries(continent = "Europe",
   select(name, geometry)
 ```
 
+# find mis-matches between country names - no Cyprus, Georgia or Turkey on map
+```{r}
+df_no_match <- df_renewable %>% 
+  anti_join(st_europe,
+             by = c("country_name" = "name"))
+
+df_no_match %>% 
+  distinct(country_name)
+```
+
