@@ -306,3 +306,18 @@ df_no_match %>%
   distinct(country_name)
 ```
 
+# fix mis-matches
+```{r}
+df_renewable_clean <- df_renewable %>% 
+  mutate(country_name = case_when(
+    country_name ==  "Bosnia & Herzegovina" ~ "Bosnia and Herz.",
+    country_name == "North Macedonia" ~ "Macedonia",
+    country_name == "Czechia" ~ "Czech Rep.",
+    country == "UK" ~ "United Kingdom",
+    country == "EL" ~ "Greece",
+    TRUE ~ country_name
+  ))
+
+df_renewable_clean
+```
+
