@@ -321,3 +321,12 @@ df_renewable_clean <- df_renewable %>%
 df_renewable_clean
 ```
 
+# join
+```{r}
+st_renewable <- df_renewable_clean %>% 
+  inner_join(st_europe,
+             by = c("country_name" = "name")) %>% 
+  ungroup() %>%  
+  st_as_sf()
+```
+
