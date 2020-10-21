@@ -330,3 +330,37 @@ st_renewable <- df_renewable_clean %>%
   st_as_sf()
 ```
 
+# PLOT ----
+```{r, fig.width=10, fig.height=10}
+st_renewable %>% 
+  ggplot() +
+  geom_sf(aes(fill = change),
+          size = 0.75,
+          col = "white") +
+  coord_sf() +
+  xlim(c(-10, 40)) +
+  ylim(c(35, 72)) +
+  scale_fill_gradient2(low = "mediumvioletred",
+                       mid = "gray55",
+                       high = "lightseagreen",
+                       breaks = c(-100, -50, 0, 25, 50),
+                       labels = function(x) paste0(x, "%")) +
+  theme_void() +
+  theme(legend.position = "bottom",
+        legend.text = element_text(size = 12.5),
+        legend.title = element_blank(),
+        plot.title = element_text(size = 30,
+                                  face = "bold",
+                                  margin = margin(t = 10)),
+        plot.subtitle = element_markdown(size = 15),
+        plot.caption = element_markdown(color = "gray30",
+                                        size = 10,
+                                        margin = margin(t = 20,
+                                                        b = 20))) +
+  guides(fill = guide_colorbar(barwidth = 25)) +
+  labs(title = "Is Europe getting greener?",
+       subtitle = "Percentage <b style='color:lightseagreen'>increase</b> or <b style='color:mediumvioletred'>decrease</b> of energy generated from <br> <b >renewables</b> between 2016 - 2018",
+       caption = "Source: Eurostats")
+
+```
+
