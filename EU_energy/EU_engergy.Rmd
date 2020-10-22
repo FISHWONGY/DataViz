@@ -364,3 +364,13 @@ st_renewable %>%
 
 ```
 
+#Plot 3
+```{r}
+#load packages
+library(tidyverse)
+library(biscale)
+library(maps)
+library(cowplot)
+library(ggtext)
+```
+
