@@ -374,8 +374,8 @@ library(cowplot)
 library(ggtext)
 ```
 
-```{r}
 #load data
+```{r}
 country_totals <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-08-04/energy_types.csv')
 ```
 
