@@ -379,8 +379,8 @@ library(ggtext)
 country_totals <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-08-04/energy_types.csv')
 ```
 
-```{r}
 #checking for NA's
+```{r}
 country_totals %>%
   count(country_name)
 ```
