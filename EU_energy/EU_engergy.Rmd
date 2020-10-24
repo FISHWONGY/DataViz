@@ -384,3 +384,19 @@ country_totals <- readr::read_csv('https://raw.githubusercontent.com/rfordatasci
 country_totals %>%
   count(country_name)
 ```
+
+```{r}
+#pivot and fix NA's
+c_tot_fixed <- country_totals %>%
+  pivot_longer(c('2016', '2017', '2018'),
+               names_to = "year",
+               values_to = "amount")%>%
+  mutate(country_n = case_when(
+    country == "EL" ~ "Greece",
+    country == "UK" ~ "UK",
+    T ~ country_name))%>%
+  select(-country_name)
+
+c_tot_fixed
+```
+
