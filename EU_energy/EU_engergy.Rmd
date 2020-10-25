@@ -400,3 +400,26 @@ c_tot_fixed <- country_totals %>%
 c_tot_fixed
 ```
 
+#dropped "Other"
+#specified year=2018
+```{r regrouping}
+
+v_3 <- 
+  c_tot_fixed %>%
+  filter(type != "Other", year == 2018) %>%
+  mutate(energy_type = fct_collapse(type,
+                      clean = c("Hydro","Pumped hydro power", "Wind","Solar","Geothermal"),
+                      not_clean = c("Conventional thermal","Nuclear"))) %>%
+  select(-type, -level, -country) %>%
+  group_by(energy_type,
+           country_n)%>%
+  summarise(total = sum(amount)) %>%
+  arrange(country_n) %>%
+  pivot_wider(names_from = energy_type,
+              values_from = total)%>%
+  mutate(prop_clean = clean/(clean + not_clean),
+         prop_not_clean = (1 - prop_clean))%>%
+  select(-clean, -not_clean)
+
+v_3
+```
