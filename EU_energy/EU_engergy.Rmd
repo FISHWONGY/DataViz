@@ -423,3 +423,7 @@ v_3 <-
 
 v_3
 ```
+
+```{r}
+pop <- read_csv("WPP2019_TotalPopulationBySex.csv")
+```
