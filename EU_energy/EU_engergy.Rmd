@@ -427,3 +427,15 @@ v_3
 ```{r}
 pop <- read_csv("WPP2019_TotalPopulationBySex.csv")
 ```
+
+
+#load population data
+```{r}
+final_df <- 
+  pop %>%
+  mutate(Location_1 = case_when(Location=="United Kingdom" ~ "UK",
+                               T ~ Location), PopTotal = PopTotal*1000) %>%
+  filter(Location_1 %in% v_3$country_n, Time == 2018) %>%
+  select(Location_1, PopTotal) %>%
+  left_join(v_3, by = c("Location_1"="country_n"))
+```
