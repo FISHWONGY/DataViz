@@ -447,7 +447,6 @@ data <- bi_class(final_df, x = prop_clean, y = PopTotal, style = "quantile", dim
 
 #map
 ```{r}
-
 world <- map_data("world")
 worldmap <- ggplot() + theme(
   panel.background = element_rect(fill = "white",
