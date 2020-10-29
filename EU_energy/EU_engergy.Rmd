@@ -440,6 +440,7 @@ final_df <-
   left_join(v_3, by = c("Location_1"="country_n"))
 ```
 
+
 ```{r}
 
 data <- bi_class(final_df, x = prop_clean, y = PopTotal, style = "quantile", dim = 3)
