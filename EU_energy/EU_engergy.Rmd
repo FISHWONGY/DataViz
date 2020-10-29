@@ -458,6 +458,7 @@ worldmap <- ggplot() + theme(
   axis.title.x = element_blank(),
   axis.title.y = element_blank()
 )
+
 map_europe <- 
   world%>%
   inner_join(data, by = c("region"="Location_1"))
