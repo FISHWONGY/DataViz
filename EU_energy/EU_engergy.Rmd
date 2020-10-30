@@ -464,3 +464,65 @@ map_europe <-
   world%>%
   inner_join(data, by = c("region"="Location_1"))
 ```
+
+```{r}
+#final plot
+europe <- worldmap + 
+  coord_fixed(xlim = c(-37, 62.5),
+                  ylim = c(31, 70),
+                  ratio = 1.5)
+europe2 <- europe +
+  geom_polygon(data = map_europe,
+               aes(fill= bi_class,
+                    x = long,
+                    y = lat,
+                    group = group),
+                    color = "black",
+                    size = 0.1) +
+  bi_scale_fill(pal = "DkViolet",
+                    dim = 3,
+                    guide = F) +
+  scale_x_continuous(breaks = NULL) + 
+  scale_y_continuous(breaks = NULL) +
+  geom_richtext(aes(x = -24, y = 62,
+                    label = "What Percent of Energy <br> was <span style='color:#AE3A4E;'>**Clean**</span> in European <br>                                Countries in 2018?"),
+                    family = "Times",
+                    color ="black",
+                    size=5.0,
+                    fill = NA,
+                    label.color = NA)+
+  geom_richtext(aes(x = 42, y = 58,
+                    label = "<span style='color:#4885C1;'>**Blue** Countries </span> have <br> low levels of clean energy <br>                             and a large population"),
+                    family = "Times",
+                    color = "black",
+                    size = 3,
+                    fill = NA,
+                    label.color = NA)+
+  geom_curve(aes(x = 42, y = 55.3, xend = 35.9, yend = 52.5 ),
+                    size = 0.17,
+             curvature = -0.3)+
+  geom_richtext(aes(x = 54, y = 47.5,
+                    label = "<span style='color:#3F2949;'>**Dark Violet** Countries </span> have <br> high levels of clean                              energy <br> and a large population"),
+                    family = "Times",
+                    color = "black",
+                    size = 3,
+                    fill = NA,
+                    label.color = NA)+
+  geom_curve(aes(x = 45, y = 46.5, xend = 30, yend = 44.5),
+                    size = 0.2,
+                    curvature = -0.32)+
+  theme(plot.background = element_blank())
+        
+legend_europe <- 
+  bi_legend(pal = "DkViolet",
+            dim = 3,
+            xlab = "% Clean Energy",
+            ylab = "Population",
+            size = 7)
+map_legend_europe <- 
+  ggdraw() +
+  draw_plot(europe2, 0, 0, 1, 1) +
+  draw_plot(legend_europe, 0.063, 0.4, 0.18, 0.18) +
+ # ggsave("photo/bi_pop_energy.png", dpi = 320, width = 12, height = 8)
+map_legend_europe 
+```
