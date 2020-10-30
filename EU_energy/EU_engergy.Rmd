@@ -465,6 +465,7 @@ map_europe <-
   inner_join(data, by = c("region"="Location_1"))
 ```
 
+
 ```{r}
 europe <- worldmap + 
   coord_fixed(xlim = c(-37, 62.5),
