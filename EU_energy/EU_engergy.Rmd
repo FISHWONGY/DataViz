@@ -466,7 +466,7 @@ map_europe <-
 ```
 
 ```{r}
-#final plot
+
 europe <- worldmap + 
   coord_fixed(xlim = c(-37, 62.5),
                   ylim = c(31, 70),
