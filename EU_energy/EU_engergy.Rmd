@@ -527,7 +527,7 @@ map_legend_europe <-
 map_legend_europe 
 ```
 
-**Dark ver map**
+**Dark ver map - final plot**
 ```{r}
 
 extrafont::loadfonts()
