@@ -526,3 +526,89 @@ map_legend_europe <-
  # ggsave("photo/bi_pop_energy.png", dpi = 320, width = 12, height = 8)
 map_legend_europe 
 ```
+
+**Dark ver map**
+```{r}
+#final plot
+extrafont::loadfonts()
+
+europe <- worldmap + 
+  coord_fixed(xlim = c(-37, 62.5),
+                  ylim = c(31, 70),
+                  ratio = 1.5)
+europe2 <- europe +
+  geom_polygon(data = map_europe,
+               aes(fill= bi_class,
+                    x = long,
+                    y = lat,
+                    group = group),
+                    color = "grey70",
+                    size = 0.1) +
+  bi_scale_fill(pal = "DkBlue",
+                    dim = 3,
+                    guide = F) +
+  scale_x_continuous(breaks = NULL) + 
+  scale_y_continuous(breaks = NULL) +
+  geom_richtext(aes(x = -24, y = 62,
+                    label = "What Percent of Energy <br> was <span style='color:#DFB0D6;'>**Clean**</span> in European <br>                                Countries in 2018?"),
+                     family="ITC Officina Sans LT Bold",
+                    color = "#D6D6D6",
+                    size=5.0,
+                    fill = NA,
+                    label.color = NA)+
+  geom_richtext(aes(x = 42, y = 58,
+                    label = "<span style='color:#BE64AC;'>**Pink** Countries </span> have <br> low levels of clean energy <br>                             and a large population"),
+                   family="ITC Officina Sans LT Bold",
+                   color = "#D6D6D6",
+                    size = 3,
+                    fill = NA,
+                    label.color = NA)+
+  geom_curve(aes(x = 42, y = 55.3, xend = 35.9, yend = 52.5 ),
+                    size = 0.17, color = "#D6D6D6",
+             curvature = -0.3)+
+  geom_richtext(aes(x = 54, y = 47.5,
+                    label = "<span style='color:#5266d1;'>**Dark Blue** Countries </span> have <br> high levels of clean                              energy <br> and a large population"),
+                    family="ITC Officina Sans LT Bold",
+                   color = "#D6D6D6",
+                    size = 3,
+                    fill = NA,
+                    label.color = NA)+
+  geom_curve(aes(x = 45, y = 46.5, xend = 30, yend = 44.5),
+                    size = 0.2, color = "#D6D6D6",
+                    curvature = -0.32)+
+ # geom_curve(aes(x = -8, y = 39.5, xend = -12, yend = 36.5),
+  #                  size = 0.2, color = "#D6D6D6",
+   #                 curvature = -0.32)+
+  theme(plot.background = element_rect(fill = "#343E48", color = NA),
+        panel.background = element_rect(fill = "#343E48", color = NA))
+        
+legend_europe <- 
+  bi_legend(pal = "DkBlue",
+            dim = 3,
+            xlab = "% Clean Energy",
+            ylab = "Population",
+            size = 7) +
+ bi_theme(bg_color = "#343E48") +
+ theme(text = element_text(size = 12, family="ITC Officina Sans LT Book"),
+        rect = element_rect(fill = "white"),
+        panel.border = element_blank(),
+        axis.text = element_blank(),
+        plot.background = element_rect(fill = "#343E48", color = NA),
+        axis.title.x = element_text(size = 10,
+                                    color = "#D6D6D6",
+                                    family="ITC Officina Sans LT Bold"),
+        axis.title.y = element_text(size = 10,
+                                    color = "#D6D6D6",
+                                    family="ITC Officina Sans LT Bold"),
+        legend.text = element_text(size = 5),
+        legend.text.align = 0)
+
+map_legend_europe <- 
+  ggdraw() +
+  draw_plot(europe2, 0, 0, 1, 1) +
+  draw_plot(legend_europe, 0.063, 0.4, 0.18, 0.18)  +
+  draw_label("Source:Euro Stat\nwww.fishwongy.com", 
+             color = "#D6D6D6", fontfamily ="ITC Officina Sans LT Book", size = 12, angle = 0, x = 0.8, y = 0.15) 
+  ggsave("photo/bi_pop_energy_dark2.png", dpi = 320, width = 12, height = 8)
+map_legend_europe 
+```
