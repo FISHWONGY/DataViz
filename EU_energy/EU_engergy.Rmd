@@ -529,7 +529,6 @@ map_legend_europe
 
 **Dark ver map - final plot**
 ```{r}
-
 extrafont::loadfonts()
 
 europe <- worldmap + 
