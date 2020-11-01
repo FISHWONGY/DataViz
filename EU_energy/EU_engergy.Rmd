@@ -617,3 +617,4 @@ map_legend_europe
 pacman::p_load(tidyverse,lubridate, tidyverse, ggplot2, hrbrthemes,patchwork,ggimage, maps, viridis,
                biscale, cowplot, grid, gridtext,hrbrthemes,scales,ggtext, ggpubr)
 ```
+
