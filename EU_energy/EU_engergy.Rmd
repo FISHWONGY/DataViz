@@ -612,7 +612,7 @@ map_legend_europe <-
 map_legend_europe 
 ```
 
-#Example 4
+#Plot 4
 ```{r}
 pacman::p_load(tidyverse,lubridate, tidyverse, ggplot2, hrbrthemes,patchwork,ggimage, maps, viridis,
                biscale, cowplot, grid, gridtext,hrbrthemes,scales,ggtext, ggpubr)
