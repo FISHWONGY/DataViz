@@ -623,7 +623,7 @@ energy_types <- readr::read_csv('https://raw.githubusercontent.com/rfordatascien
 ```
 
 ```{r}
-# Add Greece and United Kingdom
+
 
 energy_types <- energy_types %>% 
   select(1:4,7) %>% 
