@@ -621,3 +621,4 @@ pacman::p_load(tidyverse,lubridate, tidyverse, ggplot2, hrbrthemes,patchwork,ggi
 ```{r}
 energy_types <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-08-04/energy_types.csv')
 ```
+
