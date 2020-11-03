@@ -624,8 +624,6 @@ energy_types <- readr::read_csv('https://raw.githubusercontent.com/rfordatascien
 
 # Add Greece and United Kingdom
 ```{r}
-
-
 energy_types <- energy_types %>% 
   select(1:4,7) %>% 
   mutate(country_name = case_when(
