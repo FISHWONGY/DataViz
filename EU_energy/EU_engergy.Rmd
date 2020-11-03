@@ -622,3 +622,33 @@ pacman::p_load(tidyverse,lubridate, tidyverse, ggplot2, hrbrthemes,patchwork,ggi
 energy_types <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-08-04/energy_types.csv')
 ```
 
+```{r}
+# Add Greece and United Kingdom
+
+energy_types <- energy_types %>% 
+  select(1:4,7) %>% 
+  mutate(country_name = case_when(
+            country =="EL" ~ "Greece",
+            country == "UK"  ~ "UK",
+            T ~ as.character(country_name))) %>%
+  rename(Energy_2018 = "2018", 
+         region = country_name) %>%
+  mutate(region =  recode(region, "Czechia" = "Czech Republic", 
+                                  "North Macedonia" = "Macedonia",
+                                  "Bosnia & Herzegovina" = "Bosnia and Herzegovina")) %>% 
+  filter (type !="Other") %>%  
+  mutate(type_2 = case_when(
+  (type== "Conventional thermal" | type  ==  "Nuclear") ~ "Nonrenewable",
+  (type== "Geothermal" | type  ==  "Wind" | type  ==  "Solar" | type  ==  "Hydro" | type  ==  "Pumped hydro power")  ~ "Renewable",
+  T ~ "Others")) %>% 
+  group_by(country, region, type_2) %>%
+  summarize (energy_2018 = sum(Energy_2018)) %>% 
+  pivot_wider(names_from = type_2, values_from = energy_2018) %>%
+  group_by(country,region) %>%
+  summarize(
+    Renewable = median(Renewable),
+    Nonrenewable = median(Nonrenewable)) %>% 
+  bi_class(x = Renewable, y = Nonrenewable, style = "quantile", dim = 3)
+
+energy_types
+```
