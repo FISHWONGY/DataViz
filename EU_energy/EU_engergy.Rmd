@@ -652,7 +652,7 @@ energy_types <- energy_types %>%
 energy_types
 ```
 
-# World Data -------------------------------------------------------------
+# World Data ------------------------------------------------------------
 ```{r}
 world <- map_data("world")
 map_europe <- inner_join(world, energy_types, by =  "region")
