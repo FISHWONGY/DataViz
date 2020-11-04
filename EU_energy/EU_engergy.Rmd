@@ -651,3 +651,4 @@ energy_types <- energy_types %>%
 
 energy_types
 ```
+
