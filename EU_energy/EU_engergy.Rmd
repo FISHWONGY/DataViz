@@ -657,3 +657,5 @@ energy_types
 world <- map_data("world")
 map_europe <- inner_join(world, energy_types, by =  "region")
 ```
+
+# Graph -------------------------------------------------------------------
