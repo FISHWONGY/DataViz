@@ -1,4 +1,4 @@
-**Package**
+**Packagae**
 ```{r}
 library(tidyverse)
 library(ggplot2)
