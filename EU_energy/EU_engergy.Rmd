@@ -700,3 +700,27 @@ eu_plot <-
 eu_plot
 ```
 
+#lengend
+```{r}
+legend_europe <- 
+  bi_legend(pal = "DkCyan",
+            dim = 3,
+            xlab = "Renewable prod",
+            ylab = "Non-Renewable prod",
+            size = 5) +
+  theme(text = element_text(size = 12, family="ITC Officina Sans LT Book"),
+        rect = element_rect(fill = "white"),
+        panel.border = element_blank(),
+        axis.text = element_blank(),
+        plot.background = element_rect(fill = "white", color = NA),
+        axis.title.x = element_text(size = 15,
+                                    color = "#a1a1a1",
+                                    family="ITC Officina Sans LT Bold"),
+        axis.title.y = element_text(size = 15,
+                                    color = "#a1a1a1",
+                                    family="ITC Officina Sans LT Bold"),
+        legend.text = element_text(size = 5),
+        legend.text.align = 0)
+
+legend_europe
+```
