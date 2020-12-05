@@ -724,3 +724,20 @@ legend_europe <-
 
 legend_europe
 ```
+
+#Add text
+```{r}
+grob_energy <- grobTree(richtext_grob(
+  sprintf("Renewable and Non-renewable energy production of<br><br><b style='color:%s'>European countries</b><br><br>in 2018 in GWh  (Gigawatt hours)","#e3d18f"),  
+  x=.2,y=.9, hjust=0.5, gp = gpar(col = "#a1a1a1", fontsize = 15, family="ITC Officina Sans LT Book"), vjust = 1))
+
+
+
+
+grob_energy_Norway  <- grobTree(richtext_grob(
+  sprintf("<b style='color:%s'>Norway</b> was the largest producer <br>of renewable energy in hydropower.<br><br>
+          95.12 pct of total energy production .<br>(renewable and non-renewable) in 2018 <br>was from  hydropower (hydro, pumped).","#20b261"),  
+  x=.8,y=.6, hjust=0.5, 
+  gp = gpar(col = "#a1a1a1", fontsize = 10, family="ITC Officina Sans LT Book"), vjust = 1))
+
+```
