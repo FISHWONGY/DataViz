@@ -1,0 +1,223 @@
+```{r}
+library(tidyverse)
+library(lubridate)
+library(delabj)
+library(ggtext)
+library(ggbump)
+```
+
+```{r}
+lapPos <- readr::read_csv('/Volumes/My Passport for Mac/R/F1/2021/data/F1_2021_racePos.csv')
+```
+
+```{r}
+# function for duplicating scale
+# Cuz can't do scale_y_continuous(sec.axis = dup_axis()) for dicrete scale
+guide_axis_label_trans <- function(label_trans = identity, ...) {
+  axis_guide <- guide_axis(...)
+  axis_guide$label_trans <- rlang::as_function(label_trans)
+  class(axis_guide) <- c("guide_axis_trans", class(axis_guide))
+  axis_guide
+}
+
+guide_train.guide_axis_trans <- function(x, ...) {
+  trained <- NextMethod()
+  trained$key$.label <- x$label_trans(trained$key$.label)
+  trained
+}
+```
+
+# For position 1-10
+```{r}
+lapPos$position <- as.factor(lapPos$position)
+lapPos$position <- factor(lapPos$position,levels = c("20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"))
+```
+
+# set color for each driver
+```{r}
+cols <- c("HAM" = "#00D2BE", 
+          "BOT" = "#00D2BE", 
+          "VER" = "#0600EF", 
+          "PER" = "#0600EF",
+          "LEC" = "#DC0000",
+          "SAI" = "#DC0000",
+          "ALO" = "#0090FF",
+          "OCO" = "#0090FF",
+          "MSC" = "#FFFFFF",
+          "MAZ" = "#FFFFFF",
+          "VET" = "#006F62",
+          "STR" = "#006F62",
+          "TSU" = "#2B4562",
+          "GAS" = "#2B4562",
+          "NOR" = "#FF8700",
+          "RIC" = "#FF8700",
+          "GIO" = "#900000",
+          "RAI" = "#900000",
+          "RUS" = "#005AFF",
+          "LAT" = "#005AFF")
+```
+
+```{r, fig.height=5, fig.width=5}
+lapPos %>% 
+  ggplot(aes(lap, position, color = driver_int, group = driver_int)) +
+  geom_bump(aes(smooth = 15), size = 1.5) +
+  geom_point(data = lapPos %>% filter(lap %in% c(1, 56)),
+             size = 5) +
+   geom_point(data = lapPos %>% filter(lap == 33, driver_int == "ALO"),
+             size = 5) +
+   geom_point(data = lapPos %>% filter(lap == 54, driver_int %in% c("GAS", "LAT")),
+             size = 5) +
+  
+  geom_text(data = lapPos %>% filter(lap == 56),
+            aes(label = driver),
+            color = "gray70",
+            nudge_x = .31,
+            hjust = 0.6, # horizontal/ x positon
+            vjust = -1, # vertical/ y position
+            size = 3.5,
+            fontface = 2) +
+  
+  geom_text(data = lapPos %>% filter(lap == 1),
+            aes(label = driver_int),
+            color = "gray70",
+            nudge_x = .31,
+            hjust = 1.6, # horizontal/ x positon
+            vjust = -1, # vertical/ y position
+            size = 3.5,
+            fontface = 2) +
+  # Add GAS & LAT who retire at lap 54
+   geom_text(data = lapPos %>% filter(lap == 54, driver_int %in% c("GAS", "LAT")),
+            aes(label = driver),
+            color = "gray70",
+            nudge_x = .31,
+            hjust = 0.1, # horizontal/ x positon
+            vjust = -1, # vertical/ y position
+            size = 3.5,
+            fontface = 2) +
+
+    # Add ALO who retire at lap 33
+   geom_text(data = lapPos %>% filter(lap == 33, driver_int == "ALO"),
+            aes(label = driver),
+            color = "gray70",
+            nudge_x = .31,
+            hjust = 0.28, # horizontal/ x positon
+            vjust = -1, # vertical/ y position
+            size = 3.5,
+            fontface = 2) +  
+  guides(y.sec = guide_axis_label_trans()) +
+  scale_x_continuous(breaks = seq(from = 0, to =60, by = 10), 
+                     labels = paste("Lap ", seq(0, 60, by = 10))
+                     ) +
+  delabj::theme_delabj_dark() +
+  scale_colour_manual(values = cols) +
+  
+  annotate("text", x = 61, y = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20), 
+           label = c("(+ Pts 0)", "(+ Pts 0)", "(+ Pts 0)", "(+ Pts 0)", "(+ Pts 0)", 
+                     "(+ Pts 0)", "(+ Pts 0)", "(+ Pts 0)", "(+ Pts 0)", "(+ Pts 0)", 
+                     "(+ Pts 1)", "(+ Pts 2)", "(+ Pts 4)", "(+ Pts 6)", "(+ Pts 8)", 
+                     "(+ Pts 10)", "(+ Pts 12)", "(+ Pts 16)", "(+ Pts 18)", "(+ Pts 25)"), 
+           hjust = 0, size = 4, color = "#F5F5F5", family="ITC Officina Sans LT Book")  +
+  coord_cartesian(xlim = c(-.2, 56.2), clip = "off") +
+  
+  labs(x = "", y = "",
+        title = "F1 Driver <b, style = 'color:#83B692'>position</b> per lap",
+       subtitle = "Data from lap 1 - 56, Bahrain GP 2021",
+      caption = "Source: Formula 1\nhttps://fishwongy.github.io") +
+  theme(text = element_text(size = 15, family="ITC Officina Sans LT Book"),
+        legend.position = "none",
+        panel.grid = element_blank(),
+        panel.grid.major.x = element_blank(),
+        # To expand plot margin
+        plot.margin=unit(c(3, 20, 3, 3), "mm"), #(top, right, bottom, left)
+        plot.title = element_markdown(hjust = 0, family="ITC Officina Sans LT Bold", 
+                                      size = 18),
+        plot.caption = element_text(hjust = 0, color = "white", size = 12),
+        plot.subtitle = element_text(hjust = 0, color = "white", size = 12),
+        plot.title.position = "plot",
+        plot.caption.position = "plot",
+        axis.line = element_blank(),
+        axis.ticks = element_blank(),
+        axis.text.x = element_text(color = "white"))
+```
+
+```{r, fig.height=5, fig.width=5}
+lapPos %>% 
+  ggplot(aes(lap, position, color = driver_int, group = driver_int)) +
+  geom_bump(aes(smooth = 15), size = 1.5) +
+  geom_point(data = lapPos %>% filter(lap %in% c(1, 56)),
+             size = 5) +
+   geom_point(data = lapPos %>% filter(lap == 33, driver_int == "ALO"),
+             size = 5) +
+   geom_point(data = lapPos %>% filter(lap == 54, driver_int %in% c("GAS", "LAT")),
+             size = 5) +
+  
+  geom_text(data = lapPos %>% filter(lap == 56),
+            aes(label = driver),
+            color = "gray70",
+            nudge_x = .31,
+            hjust = 0.6, # horizontal/ x positon
+            vjust = -1, # vertical/ y position
+            size = 3.5,
+            fontface = 2) +
+  
+  geom_text(data = lapPos %>% filter(lap == 1),
+            aes(label = driver_int),
+            color = "gray70",
+            nudge_x = .31,
+            hjust = 1.6, # horizontal/ x positon
+            vjust = -1, # vertical/ y position
+            size = 3.5,
+            fontface = 2) +
+  # Add GAS & LAT who retire at lap 54
+   geom_text(data = lapPos %>% filter(lap == 54, driver_int %in% c("GAS", "LAT")),
+            aes(label = driver),
+            color = "gray70",
+            nudge_x = .31,
+            hjust = 0.1, # horizontal/ x positon
+            vjust = -1, # vertical/ y position
+            size = 3.5,
+            fontface = 2) +
+
+    # Add ALO who retire at lap 33
+   geom_text(data = lapPos %>% filter(lap == 33, driver_int == "ALO"),
+            aes(label = driver),
+            color = "gray70",
+            nudge_x = .31,
+            hjust = 0.28, # horizontal/ x positon
+            vjust = -1, # vertical/ y position
+            size = 3.5,
+            fontface = 2) +  
+  guides(y.sec = guide_axis_label_trans()) +
+  scale_x_continuous(breaks = seq(from = 0, to =60, by = 5)
+                     ) +
+  delabj::theme_delabj_dark() +
+  scale_colour_manual(values = cols) +
+  
+  annotate("text", x = 61, y = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20), 
+           label = c("(+ Pts 0)", "(+ Pts 0)", "(+ Pts 0)", "(+ Pts 0)", "(+ Pts 0)", 
+                     "(+ Pts 0)", "(+ Pts 0)", "(+ Pts 0)", "(+ Pts 0)", "(+ Pts 0)", 
+                     "(+ Pts 1)", "(+ Pts 2)", "(+ Pts 4)", "(+ Pts 6)", "(+ Pts 8)", 
+                     "(+ Pts 10)", "(+ Pts 12)", "(+ Pts 16)", "(+ Pts 18)", "(+ Pts 25)"), 
+           hjust = 0, size = 4, color = "#F5F5F5", family="ITC Officina Sans LT Book")  +
+  coord_cartesian(xlim = c(-.2, 56.2), clip = "off") +
+  
+  labs(x = "\nLap\n", y = "",
+        title = "F1 Driver <b, style = 'color:#83B692'>position</b> per lap",
+       subtitle = "Data from lap 1 - 56, Bahrain GP 2021",
+      caption = "Source: Formula 1\nhttps://fishwongy.github.io") +
+  theme(text = element_text(size = 15, family="ITC Officina Sans LT Book"),
+        legend.position = "none",
+        panel.grid = element_blank(),
+        panel.grid.major.x = element_blank(),
+        # To expand plot margin
+        plot.margin=unit(c(3, 20, 3, 3), "mm"), #(top, right, bottom, left)
+        plot.title = element_markdown(hjust = 0, family="ITC Officina Sans LT Bold", 
+                                      size = 18),
+        plot.caption = element_text(hjust = 0, color = "white", size = 12),
+        plot.subtitle = element_text(hjust = 0, color = "white", size = 12),
+        plot.title.position = "plot",
+        plot.caption.position = "plot",
+        axis.line = element_blank(),
+        axis.ticks = element_blank(),
+        axis.text.x = element_text(color = "white"))
+```
