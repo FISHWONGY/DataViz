@@ -63,4 +63,4 @@ driver_standing['Car'] = driver_standing['Driver'].map(team)
 driver_standing['GP'] = 'Bahrain'
 driver_standing['race'] = '1'
 
-driver_standing.to_csv('/Volumes/My Passport for Mac/R/F1/2021/data/driver_standing.csv', index=False)
+driver_standing.to_csv('data/driver_standing.csv', index=False)
