@@ -45,11 +45,12 @@ team_standing['Team'] = team_standing['Team'].map(team)
 team_standing['GP'] = 'Bahrain'
 team_standing['race'] = '1'
 
-team_standing.to_csv('/Volumes/My Passport for Mac/R/F1/2021/data/team_standing.csv', index=False)
+team_standing.to_csv('data/team_standing.csv', index=False)
 
 
-
+'''
 page = requests.get('https://fantasy.formula1.com/summary')
 tree = html.fromstring(page.content)
 fantasy_stat = tree.xpath('//div[@class = "summary-box    summary-box--most-transferred-in-by-position"]/text()')
 column_headers = []
+'''
