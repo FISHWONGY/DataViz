@@ -1,6 +1,5 @@
 import requests
 from lxml import html
-import pandas as pd
 
 page = requests.get('https://www.formula1.com/en/results.html/2021/team.html')
 tree = html.fromstring(page.content)
