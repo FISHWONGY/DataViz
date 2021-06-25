@@ -4,7 +4,7 @@ library(readr)
 library(scales)
 library(tidyverse)
 library(quanteda.dictionaries)
-
+library(quanteda)
 ```
 
 ```{r}
