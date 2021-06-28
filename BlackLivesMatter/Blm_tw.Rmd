@@ -1,5 +1,5 @@
 ```{r}
-
+library(twitteR)
 library(rtweet)
 library(streamR)
 library(ndjson)
