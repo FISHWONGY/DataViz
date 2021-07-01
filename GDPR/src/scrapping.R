@@ -1,6 +1,6 @@
 #Scrape the Privacy Affairs website
 
-
+library(rvest)
 link<- "https://www.privacyaffairs.com/gdpr-fines/"
 page <- read_html(link)
 temp <- page %>% html_nodes("script") %>% .[9] %>%
