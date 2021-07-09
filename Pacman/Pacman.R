@@ -1,6 +1,6 @@
 library(ggpacman)
 library(ggforce)
-library(gganimate)
+
 
 
 data("pacman", package = "ggpacman")
