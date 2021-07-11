@@ -1,4 +1,4 @@
-
+library(brickr)
 library(jpeg)
 library(tidyverse)
 library(dplyr)
