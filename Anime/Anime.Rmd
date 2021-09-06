@@ -1,5 +1,5 @@
 ```{r}
-
+library(rvest)
 url <- "https://myanimelist.net/topanime.php?type=tv&limit=0"
 html_content <- read_html(url)
 tab <- html_table(html_content, fill = TRUE)
